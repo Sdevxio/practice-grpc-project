@@ -1,0 +1,517 @@
+2025-08-24 14:57:17,509 - N/A - test - ConfigurationManager - DEBUG - Configuration system initialized: /Users/admin/PythonProject/PythonProject/practice-grpc-project/test_framework/configuration
+2025-08-24 14:57:17,509 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for endpoints
+2025-08-24 14:57:17,509 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for tappers
+2025-08-24 14:57:17,509 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for stations
+2025-08-24 14:57:17,509 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for test_config
+2025-08-24 14:57:17,509 - N/A - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 14:57:46,380 - N/A - test - ConfigurationManager - DEBUG - Configuration system initialized: /Users/admin/PythonProject/PythonProject/practice-grpc-project/test_framework/configuration
+2025-08-24 14:57:46,380 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for endpoints
+2025-08-24 14:57:46,380 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for tappers
+2025-08-24 14:57:46,380 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for stations
+2025-08-24 14:57:46,380 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for test_config
+2025-08-24 14:57:46,380 - N/A - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 14:57:46,384 - test_default_config - test - test_default_config - INFO - ============================== START TEST: test_default_config
+2025-08-24 14:57:46,384 - test_default_config - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 14:57:46,384 - test_default_config - test - ConfigurationManager - DEBUG - Building station config for: station1
+2025-08-24 14:57:46,393 - test_default_config - test - ConfigurationManager - DEBUG - Cached station config for station1: protocols=['http', 'mqtt']
+2025-08-24 14:57:46,394 - test_default_config - test - grpc_client - INFO - Attempting to connect to 127.0.0.1:50051
+2025-08-24 14:57:46,401 - test_default_config - test - grpc_client - INFO - Successfully connected to gRPC server at 127.0.0.1:50051
+2025-08-24 14:57:46,401 - test_default_config - test - grpc_client_manager - INFO - Successfully registered client 'root' at 127.0.0.1:50051.
+2025-08-24 14:57:46,401 - test_default_config - test - grpc_session_manager [station1] - INFO - Creating gRPC session for user 'admin'
+2025-08-24 14:57:46,401 - test_default_config - test - grpc_session_manager [station1] - INFO - Connecting to root services...
+2025-08-24 14:57:46,401 - test_default_config - test - grpc_session_manager [station1] - INFO - Connected to root services: 127.0.0.1:50051
+2025-08-24 14:57:46,401 - test_default_config - test - grpc_session_manager [station1] - INFO - Waiting for user 'admin' to log in...
+2025-08-24 14:57:46,403 - test_default_config - test - grpc_session_manager [station1] - INFO - User 'admin' logged in on port 50052
+2025-08-24 14:57:46,403 - test_default_config - test - grpc_session_manager [station1] - INFO - Building session context for 'admin'
+2025-08-24 14:57:46,403 - test_default_config - test - grpc_client - INFO - Attempting to connect to 127.0.0.1:50052
+2025-08-24 14:57:46,404 - test_default_config - test - grpc_client - INFO - Successfully connected to gRPC server at 127.0.0.1:50052
+2025-08-24 14:57:46,404 - test_default_config - test - grpc_client_manager - INFO - Successfully registered client 'admin' at 127.0.0.1:50052.
+2025-08-24 14:57:46,404 - test_default_config - test - grpc_session_manager [station1] - DEBUG - Registered user client 'admin' at 127.0.0.1:50052
+2025-08-24 14:57:46,406 - test_default_config - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 14:57:46,406 - test_default_config - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'root'
+2025-08-24 14:57:46,407 - test_default_config - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 14:57:46,407 - test_default_config - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 14:57:46,407 - test_default_config - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 14:57:46,407 - test_default_config - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'admin'
+2025-08-24 14:57:46,407 - test_default_config - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 14:57:46,407 - test_default_config - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 14:57:46,408 - test_default_config - test - grpc_session_manager [station1] - INFO - gRPC session established for 'admin'
+2025-08-24 14:57:46,408 - test_default_config - test - LoginManager - INFO - 🎯 LoginManager initialized - tapping: False, station: station1
+2025-08-24 14:57:46,408 - test_default_config - test - login_manager_fixture - INFO - ✅ LoginManager created: LoginManager(station=station1, tapping=disabled)
+2025-08-24 14:57:46,408 - test_default_config - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 14:57:46,408 - test_default_config - test - ConfigurationManager - DEBUG - Using cached config for station: station1
+2025-08-24 14:57:46,408 - test_default_config - test - grpc_client_manager - INFO - Client 'root' already registered.
+2025-08-24 14:57:46,408 - test_default_config - test - services-test_default_config - INFO - Setting up session for user: admin (station: station1, tapping: True)
+2025-08-24 14:57:46,408 - test_default_config - test - grpc_session_manager [station1] - INFO - Creating gRPC session for user 'admin'
+2025-08-24 14:57:46,408 - test_default_config - test - grpc_session_manager [station1] - INFO - Connecting to root services...
+2025-08-24 14:57:46,408 - test_default_config - test - grpc_session_manager [station1] - INFO - Connected to root services: 127.0.0.1:50051
+2025-08-24 14:57:46,408 - test_default_config - test - grpc_session_manager [station1] - INFO - Waiting for user 'admin' to log in...
+2025-08-24 14:57:46,409 - test_default_config - test - grpc_session_manager [station1] - INFO - User 'admin' logged in on port 50052
+2025-08-24 14:57:46,409 - test_default_config - test - grpc_session_manager [station1] - INFO - Building session context for 'admin'
+2025-08-24 14:57:46,409 - test_default_config - test - grpc_client_manager - INFO - Client 'admin' already registered.
+2025-08-24 14:57:46,409 - test_default_config - test - grpc_session_manager [station1] - DEBUG - Registered user client 'admin' at 127.0.0.1:50052
+2025-08-24 14:57:46,410 - test_default_config - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 14:57:46,410 - test_default_config - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'root'
+2025-08-24 14:57:46,410 - test_default_config - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 14:57:46,410 - test_default_config - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 14:57:46,410 - test_default_config - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 14:57:46,410 - test_default_config - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'admin'
+2025-08-24 14:57:46,410 - test_default_config - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 14:57:46,410 - test_default_config - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 14:57:46,410 - test_default_config - test - grpc_session_manager [station1] - INFO - gRPC session established for 'admin'
+2025-08-24 14:57:46,410 - test_default_config - test - services-test_default_config - INFO - ✅ Services ready for user: admin
+2025-08-24 14:57:46,411 - test_default_config - test - test_default_config - INFO - Testing with default configuration
+2025-08-24 14:57:46,411 - test_default_config - test - test_default_config - INFO - User: admin, Station: station1, Tapping: False
+2025-08-24 14:57:46,467 - test_default_config - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 14:57:46,467 - test_default_config - test - services-test_default_config - INFO - 🧹 Cleaning up logged in user: admin
+2025-08-24 14:57:46,467 - test_default_config - test - LoginManager - INFO - 🧹 Cleanup: Ensuring user 'admin' is logged out
+2025-08-24 14:57:46,479 - test_default_config - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 14:57:46,479 - test_default_config - test - LoginManager - INFO - 🍎 Attempting AppleScript logout for user 'admin' (3 retries)
+2025-08-24 14:57:46,479 - test_default_config - test - LoginManager - INFO - 🔄 AppleScript attempt 1/3
+2025-08-24 14:57:46,480 - test_default_config - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 14:57:46,480 - test_default_config - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 1)
+2025-08-24 14:57:46,480 - test_default_config - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 14:57:48,485 - test_default_config - test - LoginManager - INFO - 🔄 AppleScript attempt 2/3
+2025-08-24 14:57:48,488 - test_default_config - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 14:57:48,488 - test_default_config - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 2)
+2025-08-24 14:57:48,488 - test_default_config - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 14:57:50,493 - test_default_config - test - LoginManager - INFO - 🔄 AppleScript attempt 3/3
+2025-08-24 14:57:50,496 - test_default_config - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 14:57:50,496 - test_default_config - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 3)
+2025-08-24 14:57:50,496 - test_default_config - test - LoginManager - WARNING - ⚠️ AppleScript failed and tapping not available - cannot logout user 'admin'
+2025-08-24 14:57:50,496 - test_default_config - test - LoginManager - ERROR - ❌ Cleanup failed: User 'admin' could not be logged out
+2025-08-24 14:57:50,516 - test_default_config - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 14:57:50,516 - test_default_config - test - login_manager_fixture - INFO - 🧹 Cleaning up logged in user: admin
+2025-08-24 14:57:50,517 - test_default_config - test - LoginManager - INFO - 🧹 Cleanup: Ensuring user 'admin' is logged out
+2025-08-24 14:57:50,529 - test_default_config - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 14:57:50,529 - test_default_config - test - LoginManager - INFO - 🍎 Attempting AppleScript logout for user 'admin' (3 retries)
+2025-08-24 14:57:50,529 - test_default_config - test - LoginManager - INFO - 🔄 AppleScript attempt 1/3
+2025-08-24 14:57:50,530 - test_default_config - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 14:57:50,530 - test_default_config - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 1)
+2025-08-24 14:57:50,530 - test_default_config - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 14:57:52,535 - test_default_config - test - LoginManager - INFO - 🔄 AppleScript attempt 2/3
+2025-08-24 14:57:52,539 - test_default_config - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 14:57:52,539 - test_default_config - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 2)
+2025-08-24 14:57:52,539 - test_default_config - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 14:57:54,542 - test_default_config - test - LoginManager - INFO - 🔄 AppleScript attempt 3/3
+2025-08-24 14:57:54,546 - test_default_config - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 14:57:54,546 - test_default_config - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 3)
+2025-08-24 14:57:54,547 - test_default_config - test - LoginManager - WARNING - ⚠️ AppleScript failed and tapping not available - cannot logout user 'admin'
+2025-08-24 14:57:54,547 - test_default_config - test - LoginManager - ERROR - ❌ Cleanup failed: User 'admin' could not be logged out
+2025-08-24 14:57:54,547 - test_default_config - test - test_default_config - INFO - âœ“ Test passed: test_default_config
+2025-08-24 14:58:17,822 - N/A - test - ConfigurationManager - DEBUG - Configuration system initialized: /Users/admin/PythonProject/PythonProject/practice-grpc-project/test_framework/configuration
+2025-08-24 14:58:17,822 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for endpoints
+2025-08-24 14:58:17,822 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for tappers
+2025-08-24 14:58:17,822 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for stations
+2025-08-24 14:58:17,823 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for test_config
+2025-08-24 14:58:17,823 - N/A - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 14:58:17,826 - test_custom_user - test - test_custom_user - INFO - ============================== START TEST: test_custom_user
+2025-08-24 14:58:17,826 - test_custom_user - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 14:58:17,827 - test_custom_user - test - ConfigurationManager - DEBUG - Building station config for: station1
+2025-08-24 14:58:17,836 - test_custom_user - test - ConfigurationManager - DEBUG - Cached station config for station1: protocols=['http', 'mqtt']
+2025-08-24 14:58:17,836 - test_custom_user - test - grpc_client - INFO - Attempting to connect to 127.0.0.1:50051
+2025-08-24 14:58:17,840 - test_custom_user - test - grpc_client - INFO - Successfully connected to gRPC server at 127.0.0.1:50051
+2025-08-24 14:58:17,840 - test_custom_user - test - grpc_client_manager - INFO - Successfully registered client 'root' at 127.0.0.1:50051.
+2025-08-24 14:58:17,840 - test_custom_user - test - grpc_session_manager [station1] - INFO - Creating gRPC session for user 'testuser'
+2025-08-24 14:58:17,840 - test_custom_user - test - grpc_session_manager [station1] - INFO - Connecting to root services...
+2025-08-24 14:58:17,840 - test_custom_user - test - grpc_session_manager [station1] - INFO - Connected to root services: 127.0.0.1:50051
+2025-08-24 14:58:17,840 - test_custom_user - test - grpc_session_manager [station1] - INFO - Waiting for user 'testuser' to log in...
+2025-08-24 14:58:48,047 - test_custom_user - test - test_custom_user - INFO - âœ“ Test passed: test_custom_user
+2025-08-24 14:59:11,404 - N/A - test - ConfigurationManager - DEBUG - Configuration system initialized: /Users/admin/PythonProject/PythonProject/practice-grpc-project/test_framework/configuration
+2025-08-24 14:59:11,404 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for endpoints
+2025-08-24 14:59:11,404 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for tappers
+2025-08-24 14:59:11,404 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for stations
+2025-08-24 14:59:11,404 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for test_config
+2025-08-24 14:59:11,404 - N/A - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 14:59:11,408 - test_custom_user - test - test_custom_user - INFO - ============================== START TEST: test_custom_user
+2025-08-24 14:59:11,408 - test_custom_user - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 14:59:11,408 - test_custom_user - test - ConfigurationManager - DEBUG - Building station config for: station1
+2025-08-24 14:59:11,417 - test_custom_user - test - ConfigurationManager - DEBUG - Cached station config for station1: protocols=['http', 'mqtt']
+2025-08-24 14:59:11,417 - test_custom_user - test - grpc_client - INFO - Attempting to connect to 127.0.0.1:50051
+2025-08-24 14:59:11,421 - test_custom_user - test - grpc_client - INFO - Successfully connected to gRPC server at 127.0.0.1:50051
+2025-08-24 14:59:11,421 - test_custom_user - test - grpc_client_manager - INFO - Successfully registered client 'root' at 127.0.0.1:50051.
+2025-08-24 14:59:11,421 - test_custom_user - test - grpc_session_manager [station1] - INFO - Creating gRPC session for user 'admin'
+2025-08-24 14:59:11,421 - test_custom_user - test - grpc_session_manager [station1] - INFO - Connecting to root services...
+2025-08-24 14:59:11,421 - test_custom_user - test - grpc_session_manager [station1] - INFO - Connected to root services: 127.0.0.1:50051
+2025-08-24 14:59:11,421 - test_custom_user - test - grpc_session_manager [station1] - INFO - Waiting for user 'admin' to log in...
+2025-08-24 14:59:11,423 - test_custom_user - test - grpc_session_manager [station1] - INFO - User 'admin' logged in on port 50052
+2025-08-24 14:59:11,423 - test_custom_user - test - grpc_session_manager [station1] - INFO - Building session context for 'admin'
+2025-08-24 14:59:11,423 - test_custom_user - test - grpc_client - INFO - Attempting to connect to 127.0.0.1:50052
+2025-08-24 14:59:11,423 - test_custom_user - test - grpc_client - INFO - Successfully connected to gRPC server at 127.0.0.1:50052
+2025-08-24 14:59:11,423 - test_custom_user - test - grpc_client_manager - INFO - Successfully registered client 'admin' at 127.0.0.1:50052.
+2025-08-24 14:59:11,423 - test_custom_user - test - grpc_session_manager [station1] - DEBUG - Registered user client 'admin' at 127.0.0.1:50052
+2025-08-24 14:59:11,425 - test_custom_user - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 14:59:11,425 - test_custom_user - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'root'
+2025-08-24 14:59:11,426 - test_custom_user - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 14:59:11,426 - test_custom_user - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 14:59:11,426 - test_custom_user - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 14:59:11,427 - test_custom_user - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'admin'
+2025-08-24 14:59:11,427 - test_custom_user - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 14:59:11,427 - test_custom_user - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 14:59:11,427 - test_custom_user - test - grpc_session_manager [station1] - INFO - gRPC session established for 'admin'
+2025-08-24 14:59:11,427 - test_custom_user - test - LoginManager - INFO - 🎯 LoginManager initialized - tapping: False, station: station1
+2025-08-24 14:59:11,427 - test_custom_user - test - login_manager_fixture - INFO - ✅ LoginManager created: LoginManager(station=station1, tapping=disabled)
+2025-08-24 14:59:11,427 - test_custom_user - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 14:59:11,427 - test_custom_user - test - ConfigurationManager - DEBUG - Using cached config for station: station1
+2025-08-24 14:59:11,427 - test_custom_user - test - grpc_client_manager - INFO - Client 'root' already registered.
+2025-08-24 14:59:11,427 - test_custom_user - test - services-test_custom_user - INFO - Setting up session for user: admin (station: station1, tapping: True)
+2025-08-24 14:59:11,427 - test_custom_user - test - grpc_session_manager [station1] - INFO - Creating gRPC session for user 'admin'
+2025-08-24 14:59:11,427 - test_custom_user - test - grpc_session_manager [station1] - INFO - Connecting to root services...
+2025-08-24 14:59:11,428 - test_custom_user - test - grpc_session_manager [station1] - INFO - Connected to root services: 127.0.0.1:50051
+2025-08-24 14:59:11,428 - test_custom_user - test - grpc_session_manager [station1] - INFO - Waiting for user 'admin' to log in...
+2025-08-24 14:59:11,429 - test_custom_user - test - grpc_session_manager [station1] - INFO - User 'admin' logged in on port 50052
+2025-08-24 14:59:11,429 - test_custom_user - test - grpc_session_manager [station1] - INFO - Building session context for 'admin'
+2025-08-24 14:59:11,429 - test_custom_user - test - grpc_client_manager - INFO - Client 'admin' already registered.
+2025-08-24 14:59:11,429 - test_custom_user - test - grpc_session_manager [station1] - DEBUG - Registered user client 'admin' at 127.0.0.1:50052
+2025-08-24 14:59:11,429 - test_custom_user - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 14:59:11,429 - test_custom_user - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'root'
+2025-08-24 14:59:11,430 - test_custom_user - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 14:59:11,430 - test_custom_user - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 14:59:11,430 - test_custom_user - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 14:59:11,430 - test_custom_user - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'admin'
+2025-08-24 14:59:11,430 - test_custom_user - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 14:59:11,430 - test_custom_user - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 14:59:11,430 - test_custom_user - test - grpc_session_manager [station1] - INFO - gRPC session established for 'admin'
+2025-08-24 14:59:11,430 - test_custom_user - test - services-test_custom_user - INFO - ✅ Services ready for user: admin
+2025-08-24 14:59:11,431 - test_custom_user - test - test_custom_user - INFO - Testing with custom user 'admin'
+2025-08-24 14:59:11,431 - test_custom_user - test - test_custom_user - INFO - User: admin, Station: station1, Tapping: False
+2025-08-24 14:59:11,463 - test_custom_user - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 14:59:11,463 - test_custom_user - test - services-test_custom_user - INFO - 🧹 Cleaning up logged in user: admin
+2025-08-24 14:59:11,463 - test_custom_user - test - LoginManager - INFO - 🧹 Cleanup: Ensuring user 'admin' is logged out
+2025-08-24 14:59:11,475 - test_custom_user - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 14:59:11,475 - test_custom_user - test - LoginManager - INFO - 🍎 Attempting AppleScript logout for user 'admin' (3 retries)
+2025-08-24 14:59:11,475 - test_custom_user - test - LoginManager - INFO - 🔄 AppleScript attempt 1/3
+2025-08-24 14:59:11,476 - test_custom_user - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 14:59:11,476 - test_custom_user - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 1)
+2025-08-24 14:59:11,476 - test_custom_user - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 14:59:13,481 - test_custom_user - test - LoginManager - INFO - 🔄 AppleScript attempt 2/3
+2025-08-24 14:59:13,484 - test_custom_user - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 14:59:13,484 - test_custom_user - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 2)
+2025-08-24 14:59:13,484 - test_custom_user - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 14:59:15,487 - test_custom_user - test - LoginManager - INFO - 🔄 AppleScript attempt 3/3
+2025-08-24 14:59:15,491 - test_custom_user - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 14:59:15,491 - test_custom_user - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 3)
+2025-08-24 14:59:15,491 - test_custom_user - test - LoginManager - WARNING - ⚠️ AppleScript failed and tapping not available - cannot logout user 'admin'
+2025-08-24 14:59:15,491 - test_custom_user - test - LoginManager - ERROR - ❌ Cleanup failed: User 'admin' could not be logged out
+2025-08-24 14:59:15,510 - test_custom_user - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 14:59:15,510 - test_custom_user - test - login_manager_fixture - INFO - 🧹 Cleaning up logged in user: admin
+2025-08-24 14:59:15,511 - test_custom_user - test - LoginManager - INFO - 🧹 Cleanup: Ensuring user 'admin' is logged out
+2025-08-24 14:59:15,523 - test_custom_user - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 14:59:15,523 - test_custom_user - test - LoginManager - INFO - 🍎 Attempting AppleScript logout for user 'admin' (3 retries)
+2025-08-24 14:59:15,523 - test_custom_user - test - LoginManager - INFO - 🔄 AppleScript attempt 1/3
+2025-08-24 14:59:15,524 - test_custom_user - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 14:59:15,524 - test_custom_user - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 1)
+2025-08-24 14:59:15,524 - test_custom_user - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 14:59:17,529 - test_custom_user - test - LoginManager - INFO - 🔄 AppleScript attempt 2/3
+2025-08-24 14:59:17,532 - test_custom_user - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 14:59:17,533 - test_custom_user - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 2)
+2025-08-24 14:59:17,533 - test_custom_user - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 14:59:19,536 - test_custom_user - test - LoginManager - INFO - 🔄 AppleScript attempt 3/3
+2025-08-24 14:59:19,539 - test_custom_user - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 14:59:19,539 - test_custom_user - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 3)
+2025-08-24 14:59:19,539 - test_custom_user - test - LoginManager - WARNING - ⚠️ AppleScript failed and tapping not available - cannot logout user 'admin'
+2025-08-24 14:59:19,539 - test_custom_user - test - LoginManager - ERROR - ❌ Cleanup failed: User 'admin' could not be logged out
+2025-08-24 14:59:19,540 - test_custom_user - test - test_custom_user - INFO - âœ“ Test passed: test_custom_user
+2025-08-24 15:13:51,528 - N/A - test - ConfigurationManager - DEBUG - Configuration system initialized: /Users/admin/PythonProject/PythonProject/practice-grpc-project/test_framework/configuration
+2025-08-24 15:13:51,529 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for endpoints
+2025-08-24 15:13:51,529 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for tappers
+2025-08-24 15:13:51,529 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for stations
+2025-08-24 15:13:51,529 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for test_config
+2025-08-24 15:13:51,529 - N/A - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 15:13:51,533 - test_login_flow_basic - test - test_login_flow_basic - INFO - ============================== START TEST: test_login_flow_basic
+2025-08-24 15:13:51,533 - test_login_flow_basic - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 15:13:51,533 - test_login_flow_basic - test - ConfigurationManager - DEBUG - Building station config for: station1
+2025-08-24 15:13:51,542 - test_login_flow_basic - test - ConfigurationManager - DEBUG - Cached station config for station1: protocols=['http', 'mqtt']
+2025-08-24 15:13:51,542 - test_login_flow_basic - test - grpc_client - INFO - Attempting to connect to 127.0.0.1:50051
+2025-08-24 15:13:51,549 - test_login_flow_basic - test - grpc_client - INFO - Successfully connected to gRPC server at 127.0.0.1:50051
+2025-08-24 15:13:51,549 - test_login_flow_basic - test - grpc_client_manager - INFO - Successfully registered client 'root' at 127.0.0.1:50051.
+2025-08-24 15:13:51,550 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Creating gRPC session for user 'admin'
+2025-08-24 15:13:51,550 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Connecting to root services...
+2025-08-24 15:13:51,550 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Connected to root services: 127.0.0.1:50051
+2025-08-24 15:13:51,550 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Waiting for user 'admin' to log in...
+2025-08-24 15:13:51,553 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - User 'admin' logged in on port 50052
+2025-08-24 15:13:51,553 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Building session context for 'admin'
+2025-08-24 15:13:51,553 - test_login_flow_basic - test - grpc_client - INFO - Attempting to connect to 127.0.0.1:50052
+2025-08-24 15:13:51,553 - test_login_flow_basic - test - grpc_client - INFO - Successfully connected to gRPC server at 127.0.0.1:50052
+2025-08-24 15:13:51,554 - test_login_flow_basic - test - grpc_client_manager - INFO - Successfully registered client 'admin' at 127.0.0.1:50052.
+2025-08-24 15:13:51,554 - test_login_flow_basic - test - grpc_session_manager [station1] - DEBUG - Registered user client 'admin' at 127.0.0.1:50052
+2025-08-24 15:13:51,555 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 15:13:51,555 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'root'
+2025-08-24 15:13:51,556 - test_login_flow_basic - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 15:13:51,556 - test_login_flow_basic - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 15:13:51,556 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 15:13:51,557 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'admin'
+2025-08-24 15:13:51,557 - test_login_flow_basic - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 15:13:51,557 - test_login_flow_basic - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 15:13:51,557 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - gRPC session established for 'admin'
+2025-08-24 15:13:51,557 - test_login_flow_basic - test - LoginManager - INFO - 🎯 LoginManager initialized - tapping: False, station: station1
+2025-08-24 15:13:51,557 - test_login_flow_basic - test - login_manager_fixture - INFO - ✅ LoginManager created: LoginManager(station=station1, tapping=disabled)
+2025-08-24 15:13:51,557 - test_login_flow_basic - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 15:13:51,557 - test_login_flow_basic - test - ConfigurationManager - DEBUG - Using cached config for station: station1
+2025-08-24 15:13:51,557 - test_login_flow_basic - test - grpc_client_manager - INFO - Client 'root' already registered.
+2025-08-24 15:13:51,557 - test_login_flow_basic - test - services-test_login_flow_basic - INFO - Setting up session for user: admin
+2025-08-24 15:13:51,557 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Creating gRPC session for user 'admin'
+2025-08-24 15:13:51,557 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Connecting to root services...
+2025-08-24 15:13:51,557 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Connected to root services: 127.0.0.1:50051
+2025-08-24 15:13:51,558 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Waiting for user 'admin' to log in...
+2025-08-24 15:13:51,559 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - User 'admin' logged in on port 50052
+2025-08-24 15:13:51,559 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Building session context for 'admin'
+2025-08-24 15:13:51,559 - test_login_flow_basic - test - grpc_client_manager - INFO - Client 'admin' already registered.
+2025-08-24 15:13:51,559 - test_login_flow_basic - test - grpc_session_manager [station1] - DEBUG - Registered user client 'admin' at 127.0.0.1:50052
+2025-08-24 15:13:51,560 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 15:13:51,560 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'root'
+2025-08-24 15:13:51,560 - test_login_flow_basic - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 15:13:51,560 - test_login_flow_basic - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 15:13:51,560 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 15:13:51,560 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'admin'
+2025-08-24 15:13:51,560 - test_login_flow_basic - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 15:13:51,560 - test_login_flow_basic - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 15:13:51,560 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - gRPC session established for 'admin'
+2025-08-24 15:13:51,561 - test_login_flow_basic - test - services-test_login_flow_basic - INFO - ✅ Services ready for user: admin
+2025-08-24 15:13:51,561 - test_login_flow_basic - test - test_login_flow_basic - INFO - Starting basic login flow test
+2025-08-24 15:13:51,562 - test_login_flow_basic - test - test_login_flow_basic - INFO - Testing with user: admin
+2025-08-24 15:13:51,562 - test_login_flow_basic - test - test_login_flow_basic - INFO - Station: station1
+2025-08-24 15:13:51,562 - test_login_flow_basic - test - test_login_flow_basic - INFO - Tapping enabled: False
+2025-08-24 15:13:51,585 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:13:51,593 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Command executed: echo test
+2025-08-24 15:13:51,600 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Command executed: echo test
+2025-08-24 15:13:51,600 - test_login_flow_basic - test - test_login_flow_basic - INFO - ✅ Basic login flow test completed
+2025-08-24 15:13:51,612 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:13:51,613 - test_login_flow_basic - test - services-test_login_flow_basic - INFO - 🧹 Cleaning up logged in user: admin
+2025-08-24 15:13:51,613 - test_login_flow_basic - test - LoginManager - INFO - 🧹 Cleanup: Ensuring user 'admin' is logged out
+2025-08-24 15:13:51,624 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:13:51,624 - test_login_flow_basic - test - LoginManager - INFO - 🍎 Attempting AppleScript logout for user 'admin' (3 retries)
+2025-08-24 15:13:51,625 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 1/3
+2025-08-24 15:13:51,626 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:13:51,626 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 1)
+2025-08-24 15:13:51,626 - test_login_flow_basic - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 15:13:53,630 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 2/3
+2025-08-24 15:13:53,633 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:13:53,633 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 2)
+2025-08-24 15:13:53,633 - test_login_flow_basic - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 15:13:55,638 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 3/3
+2025-08-24 15:13:55,641 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:13:55,642 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 3)
+2025-08-24 15:13:55,642 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript failed and tapping not available - cannot logout user 'admin'
+2025-08-24 15:13:55,642 - test_login_flow_basic - test - LoginManager - ERROR - ❌ Cleanup failed: User 'admin' could not be logged out
+2025-08-24 15:13:55,666 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:13:55,666 - test_login_flow_basic - test - login_manager_fixture - INFO - 🧹 Cleaning up logged in user: admin
+2025-08-24 15:13:55,667 - test_login_flow_basic - test - LoginManager - INFO - 🧹 Cleanup: Ensuring user 'admin' is logged out
+2025-08-24 15:13:55,686 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:13:55,687 - test_login_flow_basic - test - LoginManager - INFO - 🍎 Attempting AppleScript logout for user 'admin' (3 retries)
+2025-08-24 15:13:55,687 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 1/3
+2025-08-24 15:13:55,688 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:13:55,689 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 1)
+2025-08-24 15:13:55,689 - test_login_flow_basic - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 15:13:57,691 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 2/3
+2025-08-24 15:13:57,694 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:13:57,694 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 2)
+2025-08-24 15:13:57,694 - test_login_flow_basic - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 15:13:59,699 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 3/3
+2025-08-24 15:13:59,702 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:13:59,702 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 3)
+2025-08-24 15:13:59,703 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript failed and tapping not available - cannot logout user 'admin'
+2025-08-24 15:13:59,703 - test_login_flow_basic - test - LoginManager - ERROR - ❌ Cleanup failed: User 'admin' could not be logged out
+2025-08-24 15:13:59,703 - test_login_flow_basic - test - test_login_flow_basic - INFO - âœ“ Test passed: test_login_flow_basic
+2025-08-24 15:14:15,958 - N/A - test - ConfigurationManager - DEBUG - Configuration system initialized: /Users/admin/PythonProject/PythonProject/practice-grpc-project/test_framework/configuration
+2025-08-24 15:14:15,958 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for endpoints
+2025-08-24 15:14:15,958 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for tappers
+2025-08-24 15:14:15,958 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for stations
+2025-08-24 15:14:15,958 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for test_config
+2025-08-24 15:14:15,958 - N/A - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 15:14:15,964 - test_login_flow_basic - test - test_login_flow_basic - INFO - ============================== START TEST: test_login_flow_basic
+2025-08-24 15:14:15,964 - test_login_flow_basic - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 15:14:15,964 - test_login_flow_basic - test - ConfigurationManager - DEBUG - Building station config for: station1
+2025-08-24 15:14:15,975 - test_login_flow_basic - test - ConfigurationManager - DEBUG - Cached station config for station1: protocols=['http', 'mqtt']
+2025-08-24 15:14:15,975 - test_login_flow_basic - test - grpc_client - INFO - Attempting to connect to 127.0.0.1:50051
+2025-08-24 15:14:15,978 - test_login_flow_basic - test - grpc_client - INFO - Successfully connected to gRPC server at 127.0.0.1:50051
+2025-08-24 15:14:15,979 - test_login_flow_basic - test - grpc_client_manager - INFO - Successfully registered client 'root' at 127.0.0.1:50051.
+2025-08-24 15:14:15,979 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Creating gRPC session for user 'admin'
+2025-08-24 15:14:15,979 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Connecting to root services...
+2025-08-24 15:14:15,979 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Connected to root services: 127.0.0.1:50051
+2025-08-24 15:14:15,979 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Waiting for user 'admin' to log in...
+2025-08-24 15:14:15,982 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - User 'admin' logged in on port 50052
+2025-08-24 15:14:15,982 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Building session context for 'admin'
+2025-08-24 15:14:15,982 - test_login_flow_basic - test - grpc_client - INFO - Attempting to connect to 127.0.0.1:50052
+2025-08-24 15:14:15,982 - test_login_flow_basic - test - grpc_client - INFO - Successfully connected to gRPC server at 127.0.0.1:50052
+2025-08-24 15:14:15,982 - test_login_flow_basic - test - grpc_client_manager - INFO - Successfully registered client 'admin' at 127.0.0.1:50052.
+2025-08-24 15:14:15,983 - test_login_flow_basic - test - grpc_session_manager [station1] - DEBUG - Registered user client 'admin' at 127.0.0.1:50052
+2025-08-24 15:14:15,984 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 15:14:15,985 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'root'
+2025-08-24 15:14:15,985 - test_login_flow_basic - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 15:14:15,985 - test_login_flow_basic - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 15:14:15,986 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 15:14:15,986 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'admin'
+2025-08-24 15:14:15,986 - test_login_flow_basic - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 15:14:15,986 - test_login_flow_basic - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 15:14:15,986 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - gRPC session established for 'admin'
+2025-08-24 15:14:15,986 - test_login_flow_basic - test - LoginManager - INFO - 🎯 LoginManager initialized - tapping: False, station: station1
+2025-08-24 15:14:15,987 - test_login_flow_basic - test - login_manager_fixture - INFO - ✅ LoginManager created: LoginManager(station=station1, tapping=disabled)
+2025-08-24 15:14:15,987 - test_login_flow_basic - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 15:14:15,987 - test_login_flow_basic - test - ConfigurationManager - DEBUG - Using cached config for station: station1
+2025-08-24 15:14:15,987 - test_login_flow_basic - test - grpc_client_manager - INFO - Client 'root' already registered.
+2025-08-24 15:14:15,987 - test_login_flow_basic - test - services-test_login_flow_basic - INFO - Setting up session for user: admin
+2025-08-24 15:14:15,987 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Creating gRPC session for user 'admin'
+2025-08-24 15:14:15,987 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Connecting to root services...
+2025-08-24 15:14:15,987 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Connected to root services: 127.0.0.1:50051
+2025-08-24 15:14:15,987 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Waiting for user 'admin' to log in...
+2025-08-24 15:14:15,989 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - User 'admin' logged in on port 50052
+2025-08-24 15:14:15,989 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Building session context for 'admin'
+2025-08-24 15:14:15,989 - test_login_flow_basic - test - grpc_client_manager - INFO - Client 'admin' already registered.
+2025-08-24 15:14:15,989 - test_login_flow_basic - test - grpc_session_manager [station1] - DEBUG - Registered user client 'admin' at 127.0.0.1:50052
+2025-08-24 15:14:15,990 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 15:14:15,990 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'root'
+2025-08-24 15:14:15,991 - test_login_flow_basic - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 15:14:15,991 - test_login_flow_basic - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 15:14:15,992 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 15:14:15,992 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'admin'
+2025-08-24 15:14:15,993 - test_login_flow_basic - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 15:14:15,993 - test_login_flow_basic - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 15:14:15,993 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - gRPC session established for 'admin'
+2025-08-24 15:14:15,993 - test_login_flow_basic - test - services-test_login_flow_basic - INFO - ✅ Services ready for user: admin
+2025-08-24 15:14:15,994 - test_login_flow_basic - test - test_login_flow_basic - INFO - Starting basic login flow test
+2025-08-24 15:14:15,994 - test_login_flow_basic - test - test_login_flow_basic - INFO - Testing with user: admin
+2025-08-24 15:14:15,995 - test_login_flow_basic - test - test_login_flow_basic - INFO - Station: station1
+2025-08-24 15:14:15,995 - test_login_flow_basic - test - test_login_flow_basic - INFO - Tapping enabled: False
+2025-08-24 15:14:16,013 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:14:16,020 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Command executed: echo test
+2025-08-24 15:14:16,028 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Command executed: echo test
+2025-08-24 15:14:16,028 - test_login_flow_basic - test - test_login_flow_basic - INFO - ✅ Basic login flow test completed
+2025-08-24 15:14:16,042 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:14:16,043 - test_login_flow_basic - test - services-test_login_flow_basic - INFO - 🧹 Cleaning up logged in user: admin
+2025-08-24 15:14:16,043 - test_login_flow_basic - test - LoginManager - INFO - 🧹 Cleanup: Ensuring user 'admin' is logged out
+2025-08-24 15:14:16,054 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:14:16,054 - test_login_flow_basic - test - LoginManager - INFO - 🍎 Attempting AppleScript logout for user 'admin' (3 retries)
+2025-08-24 15:14:16,054 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 1/3
+2025-08-24 15:14:16,055 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:14:16,055 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 1)
+2025-08-24 15:14:16,055 - test_login_flow_basic - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 15:14:18,060 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 2/3
+2025-08-24 15:14:18,064 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:14:18,064 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 2)
+2025-08-24 15:14:18,064 - test_login_flow_basic - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 15:14:20,069 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 3/3
+2025-08-24 15:14:20,071 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:14:20,071 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 3)
+2025-08-24 15:14:20,071 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript failed and tapping not available - cannot logout user 'admin'
+2025-08-24 15:14:20,071 - test_login_flow_basic - test - LoginManager - ERROR - ❌ Cleanup failed: User 'admin' could not be logged out
+2025-08-24 15:14:20,093 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:14:20,093 - test_login_flow_basic - test - login_manager_fixture - INFO - 🧹 Cleaning up logged in user: admin
+2025-08-24 15:14:20,093 - test_login_flow_basic - test - LoginManager - INFO - 🧹 Cleanup: Ensuring user 'admin' is logged out
+2025-08-24 15:14:20,111 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:14:20,111 - test_login_flow_basic - test - LoginManager - INFO - 🍎 Attempting AppleScript logout for user 'admin' (3 retries)
+2025-08-24 15:14:20,111 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 1/3
+2025-08-24 15:14:20,113 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:14:20,113 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 1)
+2025-08-24 15:14:20,113 - test_login_flow_basic - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 15:14:22,118 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 2/3
+2025-08-24 15:14:22,120 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:14:22,120 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 2)
+2025-08-24 15:14:22,120 - test_login_flow_basic - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 15:14:24,122 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 3/3
+2025-08-24 15:14:24,124 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:14:24,125 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 3)
+2025-08-24 15:14:24,125 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript failed and tapping not available - cannot logout user 'admin'
+2025-08-24 15:14:24,125 - test_login_flow_basic - test - LoginManager - ERROR - ❌ Cleanup failed: User 'admin' could not be logged out
+2025-08-24 15:14:24,125 - test_login_flow_basic - test - test_login_flow_basic - INFO - âœ“ Test passed: test_login_flow_basic
+2025-08-24 15:17:19,087 - N/A - test - ConfigurationManager - DEBUG - Configuration system initialized: /Users/admin/PythonProject/PythonProject/practice-grpc-project/test_framework/configuration
+2025-08-24 15:17:19,087 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for endpoints
+2025-08-24 15:17:19,087 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for tappers
+2025-08-24 15:17:19,087 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for stations
+2025-08-24 15:17:19,087 - N/A - test - ConfigurationManager - DEBUG - Initialized loader for test_config
+2025-08-24 15:17:19,087 - N/A - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 15:17:19,091 - test_login_flow_basic - test - test_login_flow_basic - INFO - ============================== START TEST: test_login_flow_basic
+2025-08-24 15:17:19,092 - test_login_flow_basic - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 15:17:19,092 - test_login_flow_basic - test - ConfigurationManager - DEBUG - Building station config for: station1
+2025-08-24 15:17:19,101 - test_login_flow_basic - test - ConfigurationManager - DEBUG - Cached station config for station1: protocols=['http', 'mqtt']
+2025-08-24 15:17:19,101 - test_login_flow_basic - test - grpc_client - INFO - Attempting to connect to 127.0.0.1:50051
+2025-08-24 15:17:19,105 - test_login_flow_basic - test - grpc_client - INFO - Successfully connected to gRPC server at 127.0.0.1:50051
+2025-08-24 15:17:19,105 - test_login_flow_basic - test - grpc_client_manager - INFO - Successfully registered client 'root' at 127.0.0.1:50051.
+2025-08-24 15:17:19,105 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Creating gRPC session for user 'admin'
+2025-08-24 15:17:19,105 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Connecting to root services...
+2025-08-24 15:17:19,105 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Connected to root services: 127.0.0.1:50051
+2025-08-24 15:17:19,105 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Waiting for user 'admin' to log in...
+2025-08-24 15:17:19,108 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - User 'admin' logged in on port 50052
+2025-08-24 15:17:19,108 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Building session context for 'admin'
+2025-08-24 15:17:19,108 - test_login_flow_basic - test - grpc_client - INFO - Attempting to connect to 127.0.0.1:50052
+2025-08-24 15:17:19,108 - test_login_flow_basic - test - grpc_client - INFO - Successfully connected to gRPC server at 127.0.0.1:50052
+2025-08-24 15:17:19,108 - test_login_flow_basic - test - grpc_client_manager - INFO - Successfully registered client 'admin' at 127.0.0.1:50052.
+2025-08-24 15:17:19,108 - test_login_flow_basic - test - grpc_session_manager [station1] - DEBUG - Registered user client 'admin' at 127.0.0.1:50052
+2025-08-24 15:17:19,110 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 15:17:19,110 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'root'
+2025-08-24 15:17:19,110 - test_login_flow_basic - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 15:17:19,110 - test_login_flow_basic - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 15:17:19,111 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 15:17:19,112 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'admin'
+2025-08-24 15:17:19,112 - test_login_flow_basic - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 15:17:19,112 - test_login_flow_basic - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 15:17:19,112 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - gRPC session established for 'admin'
+2025-08-24 15:17:19,112 - test_login_flow_basic - test - LoginManager - INFO - 🎯 LoginManager initialized - tapping: False, station: station1
+2025-08-24 15:17:19,112 - test_login_flow_basic - test - login_manager_fixture - INFO - ✅ LoginManager created: LoginManager(station=station1, tapping=disabled)
+2025-08-24 15:17:19,112 - test_login_flow_basic - test - StationLoader - DEBUG - Using singleton configuration manager
+2025-08-24 15:17:19,112 - test_login_flow_basic - test - ConfigurationManager - DEBUG - Using cached config for station: station1
+2025-08-24 15:17:19,112 - test_login_flow_basic - test - grpc_client_manager - INFO - Client 'root' already registered.
+2025-08-24 15:17:19,112 - test_login_flow_basic - test - services-test_login_flow_basic - INFO - Setting up session for user: admin
+2025-08-24 15:17:19,112 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Creating gRPC session for user 'admin'
+2025-08-24 15:17:19,112 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Connecting to root services...
+2025-08-24 15:17:19,112 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Connected to root services: 127.0.0.1:50051
+2025-08-24 15:17:19,113 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Waiting for user 'admin' to log in...
+2025-08-24 15:17:19,114 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - User 'admin' logged in on port 50052
+2025-08-24 15:17:19,114 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Building session context for 'admin'
+2025-08-24 15:17:19,114 - test_login_flow_basic - test - grpc_client_manager - INFO - Client 'admin' already registered.
+2025-08-24 15:17:19,114 - test_login_flow_basic - test - grpc_session_manager [station1] - DEBUG - Registered user client 'admin' at 127.0.0.1:50052
+2025-08-24 15:17:19,115 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 15:17:19,115 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'root'
+2025-08-24 15:17:19,115 - test_login_flow_basic - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 15:17:19,115 - test_login_flow_basic - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 15:17:19,115 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - LogsMonitoringServiceClient connected to real streaming service
+2025-08-24 15:17:19,116 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - GUI Automation Service connected for client 'admin'
+2025-08-24 15:17:19,116 - test_login_flow_basic - test - grpc_session_manager [station1] - ERROR - Failed to connect Web Automation Service: Web Automation protobuf modules not available
+2025-08-24 15:17:19,116 - test_login_flow_basic - test - grpc_session_manager [station1] - WARNING - Failed to register web_automation service: Web Automation Service connection failed: Web Automation protobuf modules not available
+2025-08-24 15:17:19,116 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - gRPC session established for 'admin'
+2025-08-24 15:17:19,116 - test_login_flow_basic - test - services-test_login_flow_basic - INFO - ✅ Services ready for user: admin
+2025-08-24 15:17:19,117 - test_login_flow_basic - test - test_login_flow_basic - INFO - Starting basic login flow test
+2025-08-24 15:17:19,117 - test_login_flow_basic - test - test_login_flow_basic - INFO - Testing with user: admin
+2025-08-24 15:17:19,117 - test_login_flow_basic - test - test_login_flow_basic - INFO - Station: station1
+2025-08-24 15:17:19,117 - test_login_flow_basic - test - test_login_flow_basic - INFO - Tapping enabled: False
+2025-08-24 15:17:19,138 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:17:19,145 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Command executed: echo test
+2025-08-24 15:17:19,153 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Command executed: echo test
+2025-08-24 15:17:19,153 - test_login_flow_basic - test - test_login_flow_basic - INFO - ✅ Basic login flow test completed
+2025-08-24 15:17:19,193 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:17:19,193 - test_login_flow_basic - test - services-test_login_flow_basic - INFO - 🧹 Cleaning up logged in user: admin
+2025-08-24 15:17:19,193 - test_login_flow_basic - test - LoginManager - INFO - 🧹 Cleanup: Ensuring user 'admin' is logged out
+2025-08-24 15:17:19,206 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:17:19,207 - test_login_flow_basic - test - LoginManager - INFO - 🍎 Attempting AppleScript logout for user 'admin' (3 retries)
+2025-08-24 15:17:19,207 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 1/3
+2025-08-24 15:17:19,208 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:17:19,208 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 1)
+2025-08-24 15:17:19,208 - test_login_flow_basic - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 15:17:21,213 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 2/3
+2025-08-24 15:17:21,215 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:17:21,215 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 2)
+2025-08-24 15:17:21,215 - test_login_flow_basic - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 15:17:23,220 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 3/3
+2025-08-24 15:17:23,224 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:17:23,224 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 3)
+2025-08-24 15:17:23,224 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript failed and tapping not available - cannot logout user 'admin'
+2025-08-24 15:17:23,224 - test_login_flow_basic - test - LoginManager - ERROR - ❌ Cleanup failed: User 'admin' could not be logged out
+2025-08-24 15:17:23,249 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:17:23,250 - test_login_flow_basic - test - login_manager_fixture - INFO - 🧹 Cleaning up logged in user: admin
+2025-08-24 15:17:23,250 - test_login_flow_basic - test - LoginManager - INFO - 🧹 Cleanup: Ensuring user 'admin' is logged out
+2025-08-24 15:17:23,267 - test_login_flow_basic - test - grpc_session_manager [station1] - INFO - Retrieved logged-in user info.
+2025-08-24 15:17:23,268 - test_login_flow_basic - test - LoginManager - INFO - 🍎 Attempting AppleScript logout for user 'admin' (3 retries)
+2025-08-24 15:17:23,268 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 1/3
+2025-08-24 15:17:23,270 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:17:23,270 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 1)
+2025-08-24 15:17:23,270 - test_login_flow_basic - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 15:17:25,271 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 2/3
+2025-08-24 15:17:25,274 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:17:25,275 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 2)
+2025-08-24 15:17:25,275 - test_login_flow_basic - test - LoginManager - INFO - ⏳ Retrying AppleScript in 2 seconds...
+2025-08-24 15:17:27,280 - test_login_flow_basic - test - LoginManager - INFO - 🔄 AppleScript attempt 3/3
+2025-08-24 15:17:27,282 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed: Unexpected error during native script execution: 'AppleScriptServicer' object has no attribute 'automation'
+2025-08-24 15:17:27,282 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript logout failed (attempt 3)
+2025-08-24 15:17:27,282 - test_login_flow_basic - test - LoginManager - WARNING - ⚠️ AppleScript failed and tapping not available - cannot logout user 'admin'
+2025-08-24 15:17:27,282 - test_login_flow_basic - test - LoginManager - ERROR - ❌ Cleanup failed: User 'admin' could not be logged out
+2025-08-24 15:17:27,283 - test_login_flow_basic - test - test_login_flow_basic - INFO - âœ“ Test passed: test_login_flow_basic
