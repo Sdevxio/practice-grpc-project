@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Tuple, Union
 
 from test_framework.utils import get_logger
-from test_framework.utils.handlers.file_analayzer.entry import LogEntry
+from test_framework.utils.handlers.file_analyzer.entry import LogEntry
 
 
 class LogExtractor:

@@ -1,7 +1,7 @@
 import re
 from typing import List, Optional
 
-from test_framework.utils.handlers.file_analayzer.entry import LogEntry
+from test_framework.utils.handlers.file_analyzer.entry import LogEntry
 from test_framework.utils import get_logger
 
 

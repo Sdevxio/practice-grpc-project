@@ -18,13 +18,9 @@ class GrpcSessionManager:
     """
     Enhanced gRPC session management with simple service access API.
 
-    Provides both the original SessionContext approach and a new simple API:
+    Provides a clean, simple API for gRPC session management:
     
-    Original approach (still works):
-        session = manager.create_session("admin")
-        result = session.root_context.command.run_command("whoami")
-    
-    New simple API:
+        manager = GrpcSessionManager("station_id")
         manager.setup_user("admin") 
         result = manager.command("root").run_command("whoami")  # root-grpc-server
         result = manager.command("admin").run_command("whoami") # user-agent server
@@ -33,9 +29,12 @@ class GrpcSessionManager:
     - Register root gRPC client based on station configs
     - Wait for expected user to log in
     - Discover the agent's gRPC port via RegistryService
-    - Construct and return a fully connected SessionContext
-    - Provide direct service access with simple API
+    - Provide direct service access with context-aware routing
     - Provide logged-in user information via command service
+    
+    Context routing:
+    - "root": Uses root-level gRPC server for system operations
+    - username: Uses user-agent gRPC server for user operations
     """
 
     def __init__(self, station_id: str, logger: Optional[logging.Logger] = None):
@@ -51,24 +50,15 @@ class GrpcSessionManager:
         """
         Create a gRPC session for the expected user.
 
+        DEPRECATED: Use setup_user() instead for the modern API.
+        This method is kept for backward compatibility.
+
         :param expected_user: Username expected to log in
         :param timeout: Time in seconds to wait for login
         :return: Fully initialized SessionContext
         """
-        self.logger.info(f"Creating gRPC session for user '{expected_user}'")
-
-        # Step 1: Connect to root registry and command service
-        self._connect_to_root_services()
-
-        # Step 2: Wait for user login
-        agent_port = self._wait_for_agent_login(expected_user, timeout)
-
-        # Step 3: Build session context
-        session_context = self._build_session_context(expected_user, agent_port)
-        self._session_context = session_context
-
-        self.logger.info(f"gRPC session established for '{expected_user}'")
-        return session_context
+        self.setup_user(expected_user, timeout)
+        return self._session_context
 
     def get_logged_in_users(self) -> Dict[str, Any]:
         """
@@ -141,10 +131,10 @@ class GrpcSessionManager:
 
     def setup_user(self, expected_user: str, timeout: int = 30) -> 'GrpcSessionManager':
         """
-        Setup session for a specific user - simple API version.
+        Setup session for a specific user.
         
-        This is equivalent to create_session() but designed for method chaining
-        and the simple API pattern.
+        This is the primary method for establishing gRPC sessions.
+        Supports method chaining for the simple API pattern.
         
         Args:
             expected_user: Username expected to log in
@@ -153,7 +143,19 @@ class GrpcSessionManager:
         Returns:
             Self for method chaining
         """
-        self.create_session(expected_user, timeout)
+        self.logger.info(f"Setting up gRPC session for user '{expected_user}'")
+
+        # Step 1: Connect to root registry and command service
+        self._connect_to_root_services()
+
+        # Step 2: Wait for user login
+        agent_port = self._wait_for_agent_login(expected_user, timeout)
+
+        # Step 3: Build session context
+        session_context = self._build_session_context(expected_user, agent_port)
+        self._session_context = session_context
+
+        self.logger.info(f"gRPC session established for '{expected_user}'")
         return self
 
     def command(self, context: str):

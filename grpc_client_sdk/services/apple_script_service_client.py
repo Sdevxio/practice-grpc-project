@@ -3,11 +3,10 @@ from typing import Optional, Dict, Any, Generator
 from generated import apple_script_service_pb2
 from generated.apple_script_service_pb2_grpc import AppleScriptServiceStub
 
-from grpc_client_sdk.core.grpc_client_manager import GrpcClientManager
-from test_framework.utils import get_logger
+from grpc_client_sdk.core.base_service_client import BaseServiceClient
 
 
-class AppleScriptServiceClient:
+class AppleScriptServiceClient(BaseServiceClient):
     """
     AppleScriptServiceClient is a gRPC client wrapper for executing AppleScript and
     performing UI automation via macOS's user agent.
@@ -35,6 +34,14 @@ class AppleScriptServiceClient:
             print(result["stdout"])  # Should print "Hello, World!"
     """
 
+    @property
+    def stub_class(self) -> type:
+        return AppleScriptServiceStub
+    
+    @property
+    def service_name(self) -> str:
+        return "AppleScriptService"
+    
     def __init__(self, client_name: str = "user", logger: Optional[object] = None):
         """
         Initialize AppleScriptServiceClient.
@@ -42,15 +49,7 @@ class AppleScriptServiceClient:
         :param client_name: Name of the gRPC client in GrpcClientManager.
         :param logger: Custom logger instance. If None, a default logger is created.
         """
-        self.client_name = client_name
-        self.logger = logger or get_logger(f"AppleScriptServiceClient[{client_name}]")
-        self.stub: Optional[AppleScriptServiceStub] = None
-
-    def connect(self):
-        """
-        Establishes the gRPC connection and stub for AppleScriptService.
-        """
-        self.stub = GrpcClientManager.get_stub(self.client_name, AppleScriptServiceStub)
+        super().__init__(client_name, "user", logger)
 
     def run_applescript(
             self,
@@ -75,8 +74,7 @@ class AppleScriptServiceClient:
         if result["success"]:
             print(result["stdout"])  # Should print "Hello, World!"
         """
-        if not self.stub:
-            raise RuntimeError("Client not connected. Call connect() before executing scripts.")
+        self.ensure_connected()
 
         try:
             # Prepare the request
@@ -131,8 +129,7 @@ class AppleScriptServiceClient:
         for output in client.stream_applescript('return "Hello, World!"'):
             print(output['output'])  # Should print "Hello, World!" in real-time
         """
-        if not self.stub:
-            raise RuntimeError("Client not connected. Call connect() before executing scripts.")
+        self.ensure_connected()
 
         try:
             request = apple_script_service_pb2.AppleScriptRequest(
@@ -186,8 +183,7 @@ class AppleScriptServiceClient:
             parameters={"window_name": "Alert"}
         )
         """
-        if not self.stub:
-            raise RuntimeError("Client not connected. Call connect() before executing scripts.")
+        self.ensure_connected()
 
         try:
             param_dict = parameters or {}

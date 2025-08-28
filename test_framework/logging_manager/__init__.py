@@ -17,7 +17,7 @@ Migration from old login_logout module:
 - Simplified pytest fixtures
 
 Usage:
-    from test_framework.loging_manager import LoginManager, create_login_manager
+    from test_framework.logging_manager import LoginManager, create_login_manager
     
     # In tests
     def test_something(login_manager, logged_in_testuser):

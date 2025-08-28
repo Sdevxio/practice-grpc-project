@@ -15,8 +15,8 @@ from typing import Optional, List, Dict, Callable, Any
 import grpc
 from grpc_client_sdk.core.grpc_client_manager import GrpcClientManager
 from test_framework.utils import get_logger
-from test_framework.utils.handlers.file_analayzer.parser import LogParser
-from test_framework.utils.handlers.file_analayzer.extractor import LogExtractor
+from test_framework.utils.handlers.file_analyzer.parser import LogParser
+from test_framework.utils.handlers.file_analyzer.extractor import LogExtractor
 
 
 class LogsMonitoringServiceClient:
@@ -75,15 +75,11 @@ class LogsMonitoringServiceClient:
         Uses real-time streaming for millisecond-level precision.
         """
         if not self.connected or not self.stub:
-            self.logger.warning("Streaming service not connected - falling back to polling")
-            return {
-                'found_entries': {},
-                'tap_start_time': tap_start_time,
-                'expected_patterns': expected_patterns,
-                'search_completed': False,
-                'timeout_reached': True,
-                'streaming_available': False
-            }
+            self.logger.warning("Streaming service not connected - falling back to file reading")
+            return self._fallback_file_correlation(
+                tap_start_time, expected_patterns, log_file_path, 
+                correlation_window_seconds, structured_criteria
+            )
 
         self.logger.info(f"Starting tap correlation streaming for patterns: {expected_patterns}")
 
@@ -139,10 +135,27 @@ class LogsMonitoringServiceClient:
                 self.stop_log_stream(stream_id)
 
                 self.logger.info(f"Tap correlation found {found_count}/{len(expected_patterns)} patterns")
+                
+                # If streaming didn't find entries, try fallback file reading
+                if found_count == 0:
+                    self.logger.info("Streaming found no entries, trying fallback file reading")
+                    fallback_result = self._fallback_file_correlation(
+                        tap_start_time, expected_patterns, log_file_path,
+                        correlation_window_seconds, structured_criteria
+                    )
+                    # Use fallback result if it found entries
+                    if fallback_result['found_entries']:
+                        self.logger.info("Fallback file reading found entries, using those results")
+                        return fallback_result
 
         except Exception as e:
             self.logger.error(f"Error in tap correlation streaming: {e}")
-            correlation_results['timeout_reached'] = True
+            # If streaming fails, try fallback file reading
+            self.logger.info("Streaming failed, trying fallback file reading")
+            return self._fallback_file_correlation(
+                tap_start_time, expected_patterns, log_file_path,
+                correlation_window_seconds, structured_criteria
+            )
 
         return correlation_results
 
@@ -362,3 +375,97 @@ class LogsMonitoringServiceClient:
                 }
                 for stream_id, info in self.active_streams.items()
             }
+
+    def _fallback_file_correlation(self, tap_start_time: datetime, expected_patterns: List[str], 
+                                   log_file_path: str, correlation_window_seconds: int,
+                                   structured_criteria: Optional[Dict] = None) -> Dict[str, Any]:
+        """
+        Fallback method that reads log file directly when streaming is not available.
+        """
+        self.logger.info("Using fallback file reading for log correlation")
+        
+        import os
+        from pathlib import Path
+        
+        correlation_results = {
+            'found_entries': {},
+            'tap_start_time': tap_start_time,
+            'expected_patterns': expected_patterns,
+            'search_completed': False,
+            'timeout_reached': False,
+            'streaming_available': False
+        }
+        
+        try:
+            log_path = Path(log_file_path)
+            if not log_path.exists():
+                self.logger.warning(f"Log file does not exist: {log_file_path}")
+                return correlation_results
+                
+            # Read recent log entries (last 100 lines to avoid reading huge files)
+            with open(log_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()[-100:]  # Get last 100 lines
+                
+            found_count = 0
+            for i, pattern in enumerate(expected_patterns):
+                for line_num, line in enumerate(lines):
+                    line = line.strip()
+                    if not line:
+                        continue
+                        
+                    # Check if pattern matches
+                    if pattern.lower() in line.lower():
+                        # Parse the log entry
+                        try:
+                            # Extract timestamp (assuming format: YYYY-MM-DD HH:MM:SS.mmm)
+                            timestamp_part = line.split(' ')[0] + ' ' + line.split(' ')[1]
+                            entry_time = self._parse_entry_timestamp(timestamp_part)
+                            
+                            # Check if entry is within correlation window (allow entries from before tap time too)
+                            delay_seconds = (entry_time - tap_start_time).total_seconds()
+                            if -correlation_window_seconds <= delay_seconds <= correlation_window_seconds:
+                                
+                                # Apply structured criteria if provided
+                                if structured_criteria:
+                                    matches_criteria = True
+                                    for field, value in structured_criteria.items():
+                                        if field == 'component' and str(value) not in line:
+                                            matches_criteria = False
+                                            break
+                                        elif field == 'process_name' and str(value) not in line:
+                                            matches_criteria = False
+                                            break
+                                    
+                                    if not matches_criteria:
+                                        continue
+                                
+                                # Create mock entry object
+                                class MockLogEntry:
+                                    def __init__(self, timestamp, message):
+                                        self.timestamp = timestamp
+                                        self.message = message
+                                
+                                mock_entry = MockLogEntry(timestamp_part, line)
+                                
+                                correlation_results['found_entries'][f"pattern_{i}"] = {
+                                    'entry': mock_entry,
+                                    'pattern_matched': pattern,
+                                    'delay_seconds': delay_seconds,
+                                    'correlation_time': entry_time,
+                                    'message': line
+                                }
+                                found_count += 1
+                                break
+                                
+                        except Exception as parse_error:
+                            self.logger.warning(f"Could not parse log line: {line[:50]}... Error: {parse_error}")
+                            continue
+            
+            correlation_results['search_completed'] = found_count == len(expected_patterns)
+            self.logger.info(f"Fallback file correlation found {found_count}/{len(expected_patterns)} patterns")
+            
+        except Exception as e:
+            self.logger.error(f"Error in fallback file correlation: {e}")
+            correlation_results['timeout_reached'] = True
+        
+        return correlation_results

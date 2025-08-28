@@ -7,7 +7,9 @@ for the test framework while maintaining clear separation of concerns.
 import pytest
 
 pytest_plugins = [
-    "test_framework.fixtures.fixtures",
+    "test_framework.fixtures.config_fixtures",      # test_config
+    "test_framework.fixtures.logging_fixtures",     # test_logger, setup_logging  
+    "test_framework.fixtures.clean_fixtures",       # All clean fixtures
 ]
 
 
