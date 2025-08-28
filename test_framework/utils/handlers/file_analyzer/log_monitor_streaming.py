@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 
-from test_framework.utils.handlers.file_analayzer.entry import LogEntry
+from test_framework.utils.handlers.file_analyzer.entry import LogEntry
 from test_framework.utils import get_logger
 
 

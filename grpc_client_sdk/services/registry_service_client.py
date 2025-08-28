@@ -3,11 +3,10 @@ from typing import Optional, Dict, List
 from generated import agent_registry_service_pb2
 from generated.agent_registry_service_pb2_grpc import RegistryServiceStub
 
-from grpc_client_sdk.core.grpc_client_manager import GrpcClientManager
-from test_framework.utils import get_logger
+from grpc_client_sdk.core.base_service_client import BaseServiceClient
 
 
-class RegistryServiceClient:
+class RegistryServiceClient(BaseServiceClient):
     """
     RegistryServiceClient is a gRPC wrapper for querying agent registration status
     from the macOS root-level gRPC server.
@@ -31,6 +30,14 @@ class RegistryServiceClient:
         all_agents = client.list_agents()
     """
 
+    @property
+    def stub_class(self) -> type:
+        return RegistryServiceStub
+    
+    @property
+    def service_name(self) -> str:
+        return "RegistryService"
+    
     def __init__(self, client_name: str = "root", logger: Optional[object] = None):
         """
         Initialize RegistryServiceClient.
@@ -39,16 +46,8 @@ class RegistryServiceClient:
         :param logger: Custom logger instance. If
         None, a default logger is created.
         """
-        self.client_name = client_name
-        self.logger = logger or get_logger(f"RegistryServiceClient[{client_name}]")
-        self.stub: Optional[RegistryServiceStub] = None
+        super().__init__(client_name, "root", logger)
         self.host: Optional[str] = None  # Used in SessionContextBuilder if needed
-
-    def connect(self) -> None:
-        """
-        Establishes the gRPC connection and stub for RegistryService.
-        """
-        self.stub = GrpcClientManager.get_stub(self.client_name, RegistryServiceStub)
 
     def get_agent(self, username: str) -> Optional[Dict[str, any]]:
         """
@@ -74,8 +73,7 @@ class RegistryServiceClient:
             else:
                 print("Agent not found.")
         """
-        if not self.stub:
-            raise RuntimeError("RegistryServiceClient not connected.")
+        self.ensure_connected()
 
         try:
             request = agent_registry_service_pb2.AgentIdentifier(username=username)
@@ -109,8 +107,7 @@ class RegistryServiceClient:
             all_agents = client.list_agents()
             print(f"All registered agents: {all_agents}")
         """
-        if not self.stub:
-            raise RuntimeError("RegistryServiceClient not connected.")
+        self.ensure_connected()
 
         try:
             response = self.stub.ListAgents(agent_registry_service_pb2.Empty())

@@ -10,8 +10,8 @@ This module provides proper pytest fixtures following pytest design patterns:
 
 import pytest
 from test_framework.grpc_session.session_manager import GrpcSessionManager
-from test_framework.loging_manager.grpc_session_login_adapter import create_login_adapter
-from test_framework.loging_manager.login_manager import create_login_manager
+from test_framework.logging_manager.grpc_session_login_adapter import create_login_adapter
+from test_framework.logging_manager.login_manager import create_login_manager
 from test_framework.utils import get_logger
 
 

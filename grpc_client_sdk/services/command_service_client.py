@@ -4,11 +4,10 @@ from generated import commands_service_pb2
 from generated.commands_service_pb2_grpc import CommandServiceStub
 from grpc import RpcError
 
-from grpc_client_sdk.core.grpc_client_manager import GrpcClientManager
-from test_framework.utils import get_logger
+from grpc_client_sdk.core.base_service_client import BaseServiceClient
 
 
-class CommandServiceClient:
+class CommandServiceClient(BaseServiceClient):
     """
     CommandServiceClient is a gRPC client for executing shell commands and retrieving logged-in user information on macOS endpoint.
     It provides methods to run commands synchronously and fetch the list of users currently logged in.
@@ -33,6 +32,14 @@ class CommandServiceClient:
         print(result['stdout'])  # Should print the output of the 'ls -l' command
     """
 
+    @property
+    def stub_class(self) -> type:
+        return CommandServiceStub
+    
+    @property
+    def service_name(self) -> str:
+        return "CommandService"
+    
     def __init__(self, client_name: str = "root", logger: Optional[object] = None):
         """
         Initializes the CommandServiceClient.
@@ -40,15 +47,7 @@ class CommandServiceClient:
         :param client_name: Name of the gRPC client in GrpcClientManager.
         :param logger: Custom logger instance. If None, a default logger is created.
         """
-        self.client_name = client_name
-        self.logger = logger or get_logger(f"CommandServiceClient[{client_name}]")
-        self.stub: Optional[CommandServiceStub] = None
-
-    def connect(self) -> None:
-        """
-        Establishes the gRPC connection and stub for CommandService.
-        """
-        self.stub = GrpcClientManager.get_stub(self.client_name, CommandServiceStub)
+        super().__init__(client_name, "root", logger)
 
     def run_command(self, command: str, arguments: Optional[list] = None, target_user: str = "") -> dict:
         """
@@ -63,8 +62,7 @@ class CommandServiceClient:
             result = client.run_command('ls', ['-l'], target_user='username')
             print(result['stdout'])  # Should print the output of the 'ls -l' command
         """
-        if not self.stub:
-            raise RuntimeError("Client not connected. Call connect() before executing scripts.")
+        self.ensure_connected()
 
         request = commands_service_pb2.CommandRequest(
             command=command,
@@ -89,8 +87,7 @@ class CommandServiceClient:
             result = client.get_logged_in_users()
             print(result)
         """
-        if not self.stub:
-            raise RuntimeError("CommandServiceClient not connected.")
+        self.ensure_connected()
 
         try:
             response = self.stub.GetLoggedInUsers(commands_service_pb2.GetLoggedInUsersRequest())
