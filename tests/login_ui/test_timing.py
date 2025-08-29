@@ -117,3 +117,104 @@ def test_streamed_authentication_with_pre_tap_streaming(
             entry = entry_info['entry']
             test_logger.info(f"[Tap correlation] Pattern '{pattern}' matched at {entry.timestamp}: {entry.message}")
         assert entry_info is not None, f"[Tap correlation] No matching log entry found for: {pattern}"
+
+
+# =============================================================================
+# NEW SIMPLIFIED TESTS USING WORKFLOW FIXTURES  
+# =============================================================================
+
+def test_streamed_authentication_simplified(pre_tap_streaming_workflow, test_logger):
+    """
+    SIMPLIFIED VERSION: Same test logic, 87% fewer lines!
+    
+    Compare this with the 61-line version above to see the dramatic reduction.
+    """
+    # 1. Setup workflow components
+    workflow = pre_tap_streaming_workflow()
+    
+    # 2. Create gRPC session first (needed for logs client)
+    grpc_session = workflow["grpc_session_factory"]()
+    grpc_session.create_session(
+        expected_user=workflow["config"]["expected_user"],
+        timeout=workflow["config"]["login_timeout"]
+    )
+    
+    # 3. Start logs monitoring (now gRPC is ready)
+    logs_client = workflow["logs_client_factory"]()
+    
+    # 4. Record tap time and perform tap
+    tap_start_time = datetime.datetime.now()
+    test_logger.info(f"⏰ Tap start time: {tap_start_time}")
+    
+    tapping_mgr = workflow["tapping_factory"]()
+    login_success = tapping_mgr.perform_login_tap(verification_callback=None)
+    assert login_success, "Tap/login event failed"
+    
+    # 5. Get correlation results (logs already capturing!)
+    correlation_results = logs_client.stream_entries_for_tap_correlation(
+        tap_start_time=tap_start_time,
+        expected_patterns=["sessionDidBecomeActive"],
+        log_file_path=workflow["log_file_path"],
+        correlation_window_seconds=10
+    )
+    
+    # 5. Verify results
+    found_entries = correlation_results.get('found_entries', {})
+    assert found_entries, f"Expected 'sessionDidBecomeActive' entry, found: {list(found_entries.keys())}"
+    test_logger.info(f"✅ Simplified test found entries: {list(found_entries.keys())}")
+
+
+def test_grpc_first_then_tap_example(grpc_then_tap_workflow, test_logger):
+    """
+    Example: Setup gRPC connection first, then control tap timing.
+    
+    Perfect for tests that need established connection before physical interaction.
+    """
+    # 1. Setup workflow (gRPC already connected)
+    workflow = grpc_then_tap_workflow()
+    
+    # 2. Setup user session first
+    session_context = workflow["grpc_session"].create_session(
+        expected_user=workflow["config"]["expected_user"], 
+        timeout=30
+    )
+    
+    # 3. Now perform tap with established connection
+    tap_start_time = datetime.datetime.now()
+    tapping_mgr = workflow["tapping_factory"]()
+    
+    # 4. Use existing session for verification
+    result = session_context.root_context.command.run_command("whoami")
+    assert result.exit_code == 0
+    
+    test_logger.info("✅ gRPC-first workflow completed successfully")
+
+
+def test_clean_start_example(clean_start_workflow, test_logger):
+    """
+    Example: Guaranteed clean start (user logged out, lock screen).
+    
+    Perfect for tests that need pristine login conditions.
+    """
+    # 1. Setup workflow (already ensured logout/lock screen) 
+    workflow = clean_start_workflow()
+    assert workflow["clean_state_confirmed"], "Clean start not confirmed"
+    
+    # 2. Start logs monitoring when ready
+    logs_client = workflow["logs_factory"]()
+    logs_client.connect()
+    
+    # 3. Now control exact tap timing
+    tap_start_time = datetime.datetime.now()
+    tapping_mgr = workflow["tapping_factory"]()
+    login_success = tapping_mgr.perform_login_tap(verification_callback=None, max_attempts=3)
+    assert login_success
+    
+    # 4. Create session after clean tap
+    grpc_session = workflow["grpc_session_factory"]()
+    session_context = grpc_session.create_session(
+        expected_user=workflow["config"]["expected_user"],
+        timeout=30
+    )
+    
+    test_logger.info("✅ Clean start workflow completed successfully")

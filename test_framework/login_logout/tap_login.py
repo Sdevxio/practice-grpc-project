@@ -2,8 +2,8 @@ import logging
 import time
 from typing import Optional
 
-from tappers_service.controller.tapper_service import TapperService
 from tappers_service.command import sequences
+from tappers_service.controller.tapper_service import TapperService
 from test_framework.utils import get_logger
 
 

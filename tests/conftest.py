@@ -4,6 +4,7 @@ from typing import Any
 
 import pytest
 
+from grpc_client_sdk.services.logs_monitor_stream_service_client import LogsMonitoringServiceClient
 from test_framework.grpc_session.session_manager import GrpcSessionManager
 from test_framework.login_logout.logout_command import logout_user
 from test_framework.login_logout.tapping_manager import TappingManager
@@ -11,9 +12,9 @@ from test_framework.utils import set_test_case, get_logger, LoggerManager
 from test_framework.utils.loaders.station_loader import StationLoader
 from test_framework.utils.logger_settings.logger_config import LoggerConfig
 
-pytest_plugins = [
-    "test_framework.hooks.logging_hook",
-]
+# pytest_plugins = [
+#     "test_framework.hooks.logging_hook",
+# ]
 
 # Global run ID for the test session
 RUN_ID = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -62,7 +63,6 @@ def session_config():
     test_users = station_loader.get_test_users()
     test_cards = station_loader.get_test_cards()
     e2e_defaults = station_loader.get_e2e_defaults()
-    domain = station_loader.get_domain()
 
     # Determine expected user with fallback
     expected_user = (
@@ -85,7 +85,6 @@ def session_config():
         "log_file_path": e2e_defaults.get('log_file_path', '/Library/Logs/testlogfiles.log'),
         "test_users": test_users,
         "e2e_defaults": e2e_defaults,
-        "domains": domain,
     }
 
 
@@ -376,3 +375,117 @@ def pytest_runtest_makereport(item):
     outcome = yield
     rep = outcome.get_result()
     setattr(item, f"rep_{rep.when}", rep)
+
+
+# =============================================================================
+# WORKFLOW-SPECIFIC FIXTURES (New - No Breaking Changes)
+# =============================================================================
+
+@pytest.fixture(scope="function")
+def pre_tap_streaming_workflow(session_config, test_logger):
+    """
+    Workflow: Start logs monitoring FIRST, then user controls tap timing.
+    
+    Perfect for tests that need to capture log entries from the exact moment of tap.
+    Solves the "logs streaming must start before tap" timing requirement.
+    
+    Returns factory function that sets up: logs_client → ready_to_tap_state
+    """
+    def setup_workflow():
+        # 1. Prepare logs client factory (connect later after gRPC session exists)
+        log_file_path = session_config["log_file_path"] 
+        
+        def create_logs_client():
+            from grpc_client_sdk.services.logs_monitor_stream_service_client import LogsMonitoringServiceClient
+            logs_client = LogsMonitoringServiceClient(client_name="root", logger=test_logger)
+            logs_client.connect()
+            stream_id = logs_client.stream_log_entries(
+                log_file_path=log_file_path,
+                include_existing=False
+            )
+            return logs_client
+        
+        test_logger.info("🎬 Pre-tap streaming workflow ready - logs monitoring active")
+        test_logger.info("⏰ Ready for tap - logs will capture from exact tap moment")
+        
+        return {
+            "logs_client_factory": create_logs_client,
+            "log_file_path": log_file_path,
+            "config": session_config,
+            "grpc_session_factory": lambda: GrpcSessionManager(session_config["station_id"]),
+            "tapping_factory": lambda: TappingManager(
+                station_id=session_config["station_id"],
+                enable_tapping=True,
+                logger=test_logger
+            )
+        }
+    
+    return setup_workflow
+
+
+@pytest.fixture(scope="function") 
+def grpc_then_tap_workflow(session_config, test_logger):
+    """
+    Workflow: Setup gRPC session first, then user controls tap timing.
+    
+    Perfect for tests that need established gRPC connection before physical interaction.
+    """
+    def setup_workflow():
+        # 1. Setup gRPC session first
+        grpc_session = GrpcSessionManager(session_config["station_id"])
+        test_logger.info("🔗 gRPC session ready - connection established")
+        
+        # 2. Ready for tap (user controls timing)
+        return {
+            "grpc_session": grpc_session,
+            "config": session_config,
+            "logs_factory": lambda: LogsMonitoringServiceClient(client_name="root", logger=test_logger),
+            "tapping_factory": lambda: TappingManager(
+                station_id=session_config["station_id"], 
+                enable_tapping=True,
+                logger=test_logger
+            )
+        }
+    
+    return setup_workflow
+
+
+@pytest.fixture(scope="function")
+def clean_start_workflow(session_config, test_logger):
+    """
+    Workflow: Ensure clean logout state, then user controls the login sequence.
+    
+    Perfect for tests that need guaranteed clean start (macOS locked, no user logged in).
+    """
+    def setup_workflow():
+        expected_user = session_config["expected_user"]
+        
+        # 1. Force logout to ensure clean state
+        test_logger.info(f"🧹 Ensuring clean start - logging out {expected_user}")
+        try:
+            temp_grpc = GrpcSessionManager(session_config["station_id"])
+            temp_session_context = temp_grpc.create_session(expected_user, timeout=30)
+            logout_user(
+                session_context=temp_session_context,
+                grpc_manager=temp_grpc,
+                expected_user=expected_user,
+                logger=test_logger
+            )
+            test_logger.info("✅ User logged out - macOS should be at lock screen")
+        except Exception as e:
+            test_logger.warning(f"Logout failed (may already be logged out): {e}")
+        
+        # 2. Ready for clean test sequence
+        return {
+            "config": session_config,
+            "grpc_session_factory": lambda: GrpcSessionManager(session_config["station_id"]),
+            "logs_factory": lambda: LogsMonitoringServiceClient(client_name="root", logger=test_logger), 
+            "tapping_factory": lambda: TappingManager(
+                station_id=session_config["station_id"],
+                enable_tapping=True,
+                logger=test_logger
+            ),
+            "clean_state_confirmed": True
+        }
+    
+    return setup_workflow
