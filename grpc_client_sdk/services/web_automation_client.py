@@ -19,6 +19,7 @@ import tempfile
 from typing import Dict, Any, Optional, List, Union, Tuple
 from pathlib import Path
 
+from grpc_client_sdk.core.base_service_client import BaseServiceClient
 from grpc_client_sdk.core.grpc_client_manager import GrpcClientManager
 from test_framework.utils import get_logger
 
@@ -30,7 +31,7 @@ except ImportError:
     PROTOBUF_AVAILABLE = False
 
 
-class WebAutomationClient:
+class WebAutomationClient(BaseServiceClient):
     """
     Fat Client for Web Automation using Hybrid Python/JavaScript Architecture
     
@@ -56,10 +57,18 @@ class WebAutomationClient:
         # All of this generates optimized JavaScript under the hood
     """
 
+    @property
+    def stub_class(self) -> type:
+        if PROTOBUF_AVAILABLE:
+            return web_automation_service_pb2_grpc.WebAutomationServiceStub
+        return None
+    
+    @property
+    def service_name(self) -> str:
+        return "WebAutomationService"
+
     def __init__(self, client_name: str = "user", logger: Optional[object] = None):
-        self.client_name = client_name
-        self.logger = logger or get_logger(f"WebAutomationClient[{client_name}]")
-        self.stub = None
+        super().__init__(client_name, "user", logger)
         self._connected = False
 
     def connect(self) -> None:
@@ -87,6 +96,10 @@ class WebAutomationClient:
         if not self.is_connected():
             self.logger.warning("Web Automation Service not connected, attempting to reconnect...")
             self.connect()
+    
+    def ensure_connected(self) -> None:
+        """Override base class method to use custom connection logic."""
+        self._ensure_connected()
 
     # =============================================================================
     # Core Low-Level Methods (Direct Server Communication)

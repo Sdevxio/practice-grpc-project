@@ -3,11 +3,10 @@ from typing import Optional
 from generated import connection_service_pb2
 from generated.connection_service_pb2_grpc import ConnectionServiceStub
 
-from grpc_client_sdk.core.grpc_client_manager import GrpcClientManager
-from test_framework.utils import get_logger
+from grpc_client_sdk.core.base_service_client import BaseServiceClient
 
 
-class ConnectionServiceClient:
+class ConnectionServiceClient(BaseServiceClient):
     """
     ConnectionServiceClient is a gRPC client wrapper for interacting with the
     ConnectionService exposed by the macOS gRPC server (root or user agent).
@@ -33,6 +32,14 @@ class ConnectionServiceClient:
         print(logged_in_user)  # Should print the logged-in username
     """
 
+    @property
+    def stub_class(self) -> type:
+        return ConnectionServiceStub
+    
+    @property
+    def service_name(self) -> str:
+        return "ConnectionService"
+    
     def __init__(self, client_name: str = 'root', logger: Optional[object] = None):
         """
         Initializes the ConnectionServiceClient.
@@ -41,15 +48,7 @@ class ConnectionServiceClient:
         :param logger: Custom logger instance. If None, a default logger is created.
         :raises RuntimeError: If the underlying client is not registered in GrpcClientManager.
         """
-        self.client_name = client_name
-        self.logger = logger or get_logger(f"ConnectionServiceClient-{client_name}")
-        self.stub: Optional[ConnectionServiceStub] = None
-
-    def connect(self):
-        """
-        Establishes the gRPC connection and stub for ConnectionService.
-        """
-        self.stub = GrpcClientManager.get_stub(self.client_name, ConnectionServiceStub)
+        super().__init__(client_name, "root", logger)
 
     def get_logged_in_username(self) -> Optional[str]:
         """
@@ -86,8 +85,7 @@ class ConnectionServiceClient:
             server_info = client.get_server_info()
             print(server_info)
         """
-        if not self.stub:
-            raise RuntimeError("ConnectionServiceClient not connected. Call connect() first.")
+        self.ensure_connected()
         try:
             response = self.stub.GetServerInfo(connection_service_pb2.ServerInfoRequest())
             return {

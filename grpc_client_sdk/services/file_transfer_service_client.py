@@ -4,11 +4,10 @@ from typing import Optional, Generator
 from generated import file_transfer_service_pb2
 from generated.file_transfer_service_pb2_grpc import FileTransferServiceStub
 
-from grpc_client_sdk.core.grpc_client_manager import GrpcClientManager
-from test_framework.utils import get_logger
+from grpc_client_sdk.core.base_service_client import BaseServiceClient
 
 
-class FileTransferServiceClient:
+class FileTransferServiceClient(BaseServiceClient):
     """
     FileTransferServiceClient is a gRPC client wrapper for the FileTransferService
     exposed by the macOS root gRPC server.
@@ -34,6 +33,14 @@ class FileTransferServiceClient:
                 f.write(file_content)
     """
 
+    @property
+    def stub_class(self) -> type:
+        return FileTransferServiceStub
+    
+    @property
+    def service_name(self) -> str:
+        return "FileTransferService"
+    
     def __init__(self, client_name: str = "root", logger: Optional[object] = None):
         """
         Initializes the FileTransferServiceClient.
@@ -44,15 +51,7 @@ class FileTransferServiceClient:
         :param logger: Custom logger instance. If
         None, a default logger is created.
         """
-        self.client_name = client_name
-        self.logger = logger or get_logger(f"FileTransferServiceClient[{client_name}]")
-        self.stub: Optional[FileTransferServiceStub] = None
-
-    def connect(self) -> None:
-        """
-        Establishes the gRPC connection and stub for FileTransferService.
-        """
-        self.stub = GrpcClientManager.get_stub(self.client_name, FileTransferServiceStub)
+        super().__init__(client_name, "root", logger)
 
     def download_file(self, remote_path: str, tail_bytes: Optional[str] = None) -> Optional[bytes]:
         """
@@ -79,8 +78,7 @@ class FileTransferServiceClient:
             else:
                 print("File download failed.")
         """
-        if not self.stub:
-            raise RuntimeError("FileTransferServiceClient not connected.")
+        self.ensure_connected()
 
         try:
             # Create request with optional tail_bytes parameter
@@ -155,8 +153,7 @@ class FileTransferServiceClient:
                 print("File upload failed.")
         """
 
-        if not self.stub:
-            raise RuntimeError("FileTransferServiceClient not connected.")
+        self.ensure_connected()
 
         if not os.path.exists(local_path):
             self.logger.error(f"Local file not found: {local_path}")

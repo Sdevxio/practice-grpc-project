@@ -13,6 +13,7 @@ from typing import Dict, Any, Optional, List, Union, Tuple, Generator
 from pathlib import Path
 from dataclasses import dataclass
 
+from grpc_client_sdk.core.base_service_client import BaseServiceClient
 from grpc_client_sdk.core.grpc_client_manager import GrpcClientManager
 from test_framework.utils import get_logger
 from test_framework.utils.logger_settings.logger_config import LoggerConfig
@@ -58,7 +59,7 @@ except ImportError:
             def __init__(self, **kwargs): pass
 
 
-class GuiAutomationServiceClient:
+class GuiAutomationServiceClient(BaseServiceClient):
     """
     Enhanced GUI Automation Service Client combining production patterns with comprehensive features.
 
@@ -99,6 +100,16 @@ class GuiAutomationServiceClient:
         result = client.click_image("/path/to/button.png", confidence=0.9)
     """
 
+    @property
+    def stub_class(self) -> type:
+        if PROTOBUF_AVAILABLE:
+            return gui_automation_service_pb2_grpc.GuiAutomationServiceStub
+        return None
+    
+    @property
+    def service_name(self) -> str:
+        return "GuiAutomationService"
+
     def __init__(self, client_name: str = "user", logger: Optional[object] = None):
         """
         Initialize the Enhanced GUI Automation Service Client.
@@ -107,9 +118,7 @@ class GuiAutomationServiceClient:
             client_name: Name of the gRPC client in GrpcClientManager (e.g., "root", "username")
             logger: Custom logger instance. If None, a default logger is created.
         """
-        self.client_name = client_name
-        self.logger = logger or get_logger(f"GuiAutomationServiceClient[{client_name}]")
-        self.stub = None
+        super().__init__(client_name, "user", logger)
         self._connected = False
 
         if not PROTOBUF_AVAILABLE:
@@ -173,6 +182,10 @@ class GuiAutomationServiceClient:
                 self.connect()
             except Exception as e:
                 raise RuntimeError(f"GUI Automation Service connection failed: {e}")
+    
+    def ensure_connected(self) -> None:
+        """Override base class method to use custom connection logic."""
+        self._ensure_connected()
 
     # =============================================================================
     # Enhanced Basic GUI Operations (Production + New Features)

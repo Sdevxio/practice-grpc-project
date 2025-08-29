@@ -3,11 +3,10 @@ from typing import Optional
 from generated import screen_capture_service_pb2
 from generated.screen_capture_service_pb2_grpc import ScreenCaptureServiceStub
 
-from grpc_client_sdk.core.grpc_client_manager import GrpcClientManager
-from test_framework.utils import get_logger
+from grpc_client_sdk.core.base_service_client import BaseServiceClient
 
 
-class ScreenCaptureServiceClient:
+class ScreenCaptureServiceClient(BaseServiceClient):
     """
     ScreenCaptureServiceClient is a gRPC client wrapper for the ScreenCaptureService
     exposed by the macOS user agent.
@@ -32,6 +31,14 @@ class ScreenCaptureServiceClient:
             print("Screenshot capture failed.")
     """
 
+    @property
+    def stub_class(self) -> type:
+        return ScreenCaptureServiceStub
+    
+    @property
+    def service_name(self) -> str:
+        return "ScreenCaptureService"
+    
     def __init__(self, client_name: str = "user", logger: Optional[object] = None):
         """
         Initialize the ScreenCaptureServiceClient.
@@ -42,15 +49,7 @@ class ScreenCaptureServiceClient:
         :param logger: Custom logger instance. If
         None, a default logger is created.
         """
-        self.client_name = client_name
-        self.logger = logger or get_logger(f"ScreenCaptureServiceClient[{client_name}]")
-        self.stub: Optional[ScreenCaptureServiceStub] = None
-
-    def connect(self) -> None:
-        """
-        Establishes the gRPC connection and stub for ScreenCaptureService.
-        """
-        self.stub = GrpcClientManager.get_stub(self.client_name, ScreenCaptureServiceStub)
+        super().__init__(client_name, "user", logger)
 
     def capture_screenshot(
             self,
@@ -87,8 +86,7 @@ class ScreenCaptureServiceClient:
             else:
                 print("Screenshot capture failed.")
         """
-        if not self.stub:
-            raise RuntimeError("ScreenCaptureServiceClient not connected.")
+        self.ensure_connected()
 
         try:
             request = screen_capture_service_pb2.ScreenshotRequest(
@@ -140,8 +138,7 @@ class ScreenCaptureServiceClient:
             else:
                 print("OCR extraction failed.")
         """
-        if not self.stub:
-            raise RuntimeError("ScreenCaptureServiceClient not connected.")
+        self.ensure_connected()
 
         try:
             request = screen_capture_service_pb2.ExtractTextRequest(

@@ -13,13 +13,14 @@ from datetime import datetime
 from typing import Optional, List, Dict, Callable, Any
 
 import grpc
+from grpc_client_sdk.core.base_service_client import BaseServiceClient
 from grpc_client_sdk.core.grpc_client_manager import GrpcClientManager
 from test_framework.utils import get_logger
 from test_framework.utils.handlers.file_analyzer.parser import LogParser
 from test_framework.utils.handlers.file_analyzer.extractor import LogExtractor
 
 
-class LogsMonitoringServiceClient:
+class LogsMonitoringServiceClient(BaseServiceClient):
     """
     LogsMonitoringServiceClient provides real-time log monitoring capabilities.
 
@@ -27,11 +28,21 @@ class LogsMonitoringServiceClient:
     millisecond-level timing precision for automation testing.
     """
 
+    @property
+    def stub_class(self) -> type:
+        try:
+            from generated import log_streaming_service_pb2_grpc
+            return log_streaming_service_pb2_grpc.LogStreamingServiceStub
+        except ImportError:
+            return None
+    
+    @property
+    def service_name(self) -> str:
+        return "LogStreamingService"
+
     def __init__(self, client_name: str = "root", logger: Optional[object] = None):
         """Initialize the streaming client."""
-        self.client_name = client_name
-        self.logger = logger or get_logger(f"LogsMonitoringServiceClient[{client_name}]")
-        self.stub = None
+        super().__init__(client_name, "root", logger)
         self.active_streams: Dict[str, Dict] = {}
         self.stream_lock = threading.Lock()
         self.connected = False
