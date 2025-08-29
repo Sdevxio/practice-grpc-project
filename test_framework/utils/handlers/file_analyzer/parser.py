@@ -1,17 +1,15 @@
 import re
 from typing import List, Optional
 
-from test_framework.utils.handlers.file_analayzer.entry import LogEntry
 from test_framework.utils import get_logger
-
+from test_framework.utils.handlers.file_analyzer.entry import LogEntry
 
 class LogParser:
-    """Enhanced parser for log files with support for multiple log formats."""
+    """Parser for log files with support for multiple log formats."""
 
     def __init__(self):
         """Initialize the parser with multiple format patterns."""
         self.logger = get_logger(__name__)
-
         # Primary pattern for actual format: "DD HH:MM:SS.mmm ..." or "YYYY-MM-DD HH:MM:SS.mmm ..."
         self.pattern = re.compile(
             # Use non-capturing group for timestamp alternatives to avoid extra groups
@@ -40,6 +38,7 @@ class LogParser:
 
             # Try primary structured pattern first (actual format)
             match = self.pattern.match(line)
+
             if match:
                 groups = match.groups()
                 # First two groups are timestamp alternatives, take whichever matched
@@ -61,9 +60,10 @@ class LogParser:
                     raw_line=line,
                     line_number=line_number,
                 )
+
+            # Handle unstructured log lines
             if line and not line.startswith("#"):
                 self.logger.warning(f"Failed to parse line {line_number}: {line}")
-
                 return LogEntry(
                     timestamp="",
                     component="Unstructured",
@@ -78,8 +78,8 @@ class LogParser:
                     raw_line=line,
                     line_number=line_number
                 )
-
             return None
+
         except Exception as e:
             self.logger.warning(f"Failed to parse line {line_number}: {str(e)}")
             return None
@@ -95,6 +95,7 @@ class LogParser:
         entries = []
 
         try:
+            # Try encoding in order of preference
             for encodings in ['utf-8', 'utf-8-sig', 'latin-1']:
                 try:
                     with open(file_path, 'r', encoding=encodings) as f:
@@ -113,11 +114,10 @@ class LogParser:
                 if line.strip():
                     entry = self.parse_line(line, i)
                     if entry:
-                            entries.append(entry)
+                        entries.append(entry)
 
             self.logger.info(f"Parsed {len(entries)} entries from {file_path}")
             return entries
         except Exception as e:
             self.logger.error(f"Failed to parse file {file_path}: {str(e)}")
             return []
-

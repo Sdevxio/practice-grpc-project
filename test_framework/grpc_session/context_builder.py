@@ -8,10 +8,6 @@ from grpc_client_sdk.services.command_service_client import CommandServiceClient
 from grpc_client_sdk.services.connection_service_client import ConnectionServiceClient
 from grpc_client_sdk.services.file_transfer_service_client import FileTransferServiceClient
 from grpc_client_sdk.services.screen_capture_service_client import ScreenCaptureServiceClient
-from grpc_client_sdk.services.logs_monitor_stream_service_client import LogsMonitoringServiceClient
-from grpc_client_sdk.services.gui_automation_service_client import GuiAutomationServiceClient
-from grpc_client_sdk.services.registry_service_client import RegistryServiceClient
-from grpc_client_sdk.services.web_automation_client import WebAutomationClient
 from test_framework.grpc_session.service_context import ServiceContext
 from test_framework.grpc_session.session_context import SessionContext
 
@@ -40,15 +36,8 @@ class SessionContextBuilder:
             ("command", CommandServiceClient),
             ("apple_script", AppleScriptServiceClient),
             ("connection", ConnectionServiceClient),
-            ("logs_monitor", LogsMonitoringServiceClient),
-            ("gui_automation", GuiAutomationServiceClient),
-            ("registry", RegistryServiceClient),
-            ("web_automation", WebAutomationClient),
         ]:
-            try:
-                root.register_service(name, cls)
-            except Exception as e:
-                logger.warning(f"Failed to register {name} service: {e}")
+            root.register_service(name, cls)
 
         # Register user context services
         user = ServiceContext(client_name=username, logger=logger)
@@ -58,15 +47,8 @@ class SessionContextBuilder:
             ("apple_script", AppleScriptServiceClient),
             ("connection", ConnectionServiceClient),
             ("screen_capture", ScreenCaptureServiceClient),
-            ("logs_monitor", LogsMonitoringServiceClient),
-            ("gui_automation", GuiAutomationServiceClient),
-            ("registry", RegistryServiceClient),
-            ("web_automation", WebAutomationClient),
         ]:
-            try:
-                user.register_service(name, cls)
-            except Exception as e:
-                logger.warning(f"Failed to register {name} service: {e}")
+            user.register_service(name, cls)
 
         # Return the complete session context
         return SessionContext(

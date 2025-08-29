@@ -3,8 +3,8 @@ import os
 from grpc_client_sdk.core.grpc_client_manager import GrpcClientManager
 from grpc_client_sdk.services.file_transfer_service_client import FileTransferServiceClient
 from test_framework.utils.handlers.artifacts.artifacts_handler import save_to_artifacts
-from test_framework.utils.handlers.file_analayzer.extractor import LogExtractor
-from test_framework.utils.handlers.file_analayzer.parser import LogParser
+from test_framework.utils.handlers.file_analayzer import LogExtractor
+from test_framework.utils.handlers.file_analayzer import LogParser
 
 
 def test_extract_card_ids(setup, test_logger):
@@ -25,7 +25,7 @@ def test_extract_card_ids(setup, test_logger):
     LOG_TAIL_SIZE = "10485760"  # 10MB in bytes
 
     # Download just the tail of the log file
-    remote_path = "/Library/Logs/imprivata.log"
+    remote_path = "/Library/Logs/testlogfile.log"
     content = file_transfer_client.download_file(remote_path, tail_bytes=LOG_TAIL_SIZE)
     assert content is not None, f"Failed to download file: {remote_path}"
 

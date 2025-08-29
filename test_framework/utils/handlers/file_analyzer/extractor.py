@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Tuple, Union
 
 from test_framework.utils import get_logger
-from test_framework.utils.handlers.file_analayzer.entry import LogEntry
+from test_framework.utils.handlers.file_analyzer.entry import LogEntry
 
 
 class LogExtractor:
@@ -35,7 +35,7 @@ class LogExtractor:
             except ValueError:
                 continue
 
-            # Log error only once if unique timestamp
+        # Log error only once if unique timestamp
         if timestamp_str not in self._logged_timestamp_errors:
             self.logger.error(f"Timestamp format not recognized: {timestamp_str}")
             self._logged_timestamp_errors.add(timestamp_str)
@@ -119,7 +119,6 @@ class LogExtractor:
         else:
             return self.find_entries_containing(entries, "card", "message")
 
-
     def find_error_entries(self, entries: List[LogEntry]) -> List[LogEntry]:
         """
         Find error log entries.
@@ -170,9 +169,9 @@ class LogExtractor:
         return results
 
     def find_latest_entries(self, entries: List[LogEntry],
-                                  test_time: Union[str, datetime],
-                                  time_window_seconds: int = 30,
-                                  **criteria) -> List[Tuple[LogEntry, float]]:
+                            test_time: Union[str, datetime],
+                            time_window_seconds: int = 30,
+                            **criteria) -> List[Tuple[LogEntry, float]]:
         """
         Find entries closest to test execution time.
 
@@ -238,7 +237,6 @@ class LogExtractor:
             assert extractor.has_card_activity(entries, "A1B2C3D4"), "Card not used"
         """
         return bool(self.find_card_activity(entries, card_id))
-
 
     def has_errors(self, entries: List[LogEntry]) -> bool:
         """
@@ -317,15 +315,3 @@ class LogExtractor:
 
         self.logger.info(f"Found latest entry matching criteria: {latest_entry.timestamp} - {latest_entry.message}")
         return latest_entry
-
-
-    def find_xml_entries(self, entries: List[LogEntry], expected_value: str = None) -> List[LogEntry]:
-
-        xml_entries = self.find_entries_containing(entries, text=expected_value, field="message")
-        for entry in xml_entries:
-            if expected_value in entry.message:
-                self.logger.info(f"Found XML entry: {entry.message}")
-                return [entry]
-        self.logger.info(f"XML entry not found: {expected_value}")
-        return None
-

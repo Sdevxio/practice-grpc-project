@@ -1,245 +1,254 @@
 """
-Simple Timing Calculator for log event analysis.
+LogMonitorStreaming - High-level event detection using streaming backend.
 
-This class provides simple timestamp calculations between any two time points:
-- Between two log entries
-- Between test execution time and log entry
-- Between any datetime objects
-
-Keeps it simple with start_time/end_time approach.
+This provides automated event detection with sophisticated filtering and timing
+correlation, built on top of the LogsMonitoringServiceClient streaming service.
 """
 
 import time
-from datetime import datetime
-from typing import Union, Optional
+from datetime import datetime, timedelta
+from typing import List, Dict, Optional
+from dataclasses import dataclass
+
+from test_framework.utils import get_logger
+from test_framework.utils.handlers.file_analyzer import LogEntry
 
 
-class TimingCalculator:
+@dataclass
+class EventCriteria:
+    """Criteria for automated event detection with streaming."""
+    start_time: datetime
+    target_patterns: List[str]
+    required_components: List[str] = None
+    message_contains: List[str] = None
+    message_excludes: List[str] = None
+    entry_types: List[str] = None
+    process_names: List[str] = None
+    timeout_seconds: int = 30
+    min_entries_required: int = 1
+
+
+class LogMonitorStreaming:
     """
-    Simple timing calculator for measuring delays between events.
-    
-    Can measure timing between:
-    1. Two log entries
-    2. Test execution time and log entry  
-    3. Any datetime objects
-    4. Current time and anything
+    High-level automated event detection using streaming backend.
+
+    Provides a simple blocking interface for waiting until specific log events
+    occur, with sophisticated filtering and automatic timeout/cleanup handling.
     """
-    
-    def __init__(self):
-        """Initialize timing calculator."""
-        self.test_start_time = datetime.now()
-        self.measurements = []
-    
-    def calculate_delay(self, start_time: Union[datetime, str, float, object], 
-                       end_time: Union[datetime, str, float, object, None] = None) -> dict:
+
+    def __init__(self, logs_monitor_service, log_file_path: str, test_logger=None):
         """
-        Calculate delay between start and end times.
-        
+        Initialize streaming-based log monitor.
+
         Args:
-            start_time: Start timestamp (datetime, string, float, or log entry object)
-            end_time: End timestamp (same types as start_time, or None for current time)
-            
-        Returns:
-            dict: Timing information with delay in seconds, milliseconds, and formatted strings
+            logs_monitor_service: LogsMonitoringServiceClient instance
+            log_file_path: Path to log file to monitor
+            test_logger: Logger instance (optional)
         """
-        # Convert start_time to datetime
-        start_dt = self._convert_to_datetime(start_time)
-        
-        # Convert end_time to datetime (or use current time)
-        if end_time is None:
-            end_dt = datetime.now()
-        else:
-            end_dt = self._convert_to_datetime(end_time)
-        
-        # Calculate delay
-        delay_timedelta = end_dt - start_dt
-        delay_seconds = delay_timedelta.total_seconds()
-        delay_milliseconds = delay_seconds * 1000
-        
-        # Create measurement result
-        measurement = {
-            'start_time': start_dt,
-            'end_time': end_dt,
-            'delay_seconds': delay_seconds,
-            'delay_milliseconds': delay_milliseconds,
-            'delay_formatted': self._format_delay(delay_seconds),
-            'start_formatted': start_dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
-            'end_formatted': end_dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-        }
-        
-        # Store measurement
-        self.measurements.append(measurement)
-        
-        return measurement
-    
-    def measure_from_test_start(self, end_time: Union[datetime, str, float, object]) -> dict:
+        self.logs_monitor = logs_monitor_service
+        self.log_file_path = log_file_path
+        self.logger = test_logger or get_logger(f"LogMonitorStreaming")
+
+    def wait_for_events(self, criteria: EventCriteria) -> Optional[List[LogEntry]]:
         """
-        Measure timing from when test started to the given end time.
-        
+        Wait for events matching criteria using streaming.
+
+        This is the main method - it blocks until events are found or timeout occurs.
+
         Args:
-            end_time: End timestamp (datetime, string, float, or log entry object)
-            
+            criteria: EventCriteria specifying what events to wait for
+
         Returns:
-            dict: Timing measurement from test start
+            List[LogEntry]: Matching entries if found, None if timeout
         """
-        return self.calculate_delay(self.test_start_time, end_time)
-    
-    def measure_from_now(self, start_time: Union[datetime, str, float, object]) -> dict:
-        """
-        Measure timing from given start time to current time.
-        
-        Args:
-            start_time: Start timestamp (datetime, string, float, or log entry object)
-            
-        Returns:
-            dict: Timing measurement to current time
-        """
-        return self.calculate_delay(start_time, None)
-    
-    def measure_between_entries(self, entry1: object, entry2: object) -> dict:
-        """
-        Measure timing between two log entries.
-        
-        Args:
-            entry1: First log entry (with timestamp attribute)
-            entry2: Second log entry (with timestamp attribute)
-            
-        Returns:
-            dict: Timing measurement between entries
-        """
-        return self.calculate_delay(entry1, entry2)
-    
-    def get_summary(self) -> dict:
-        """
-        Get summary of all measurements taken.
-        
-        Returns:
-            dict: Summary statistics of all measurements
-        """
-        if not self.measurements:
-            return {
-                'total_measurements': 0,
-                'average_delay_seconds': 0,
-                'min_delay_seconds': 0,
-                'max_delay_seconds': 0,
-                'measurements': []
-            }
-        
-        delays = [m['delay_seconds'] for m in self.measurements]
-        
-        return {
-            'total_measurements': len(self.measurements),
-            'average_delay_seconds': sum(delays) / len(delays),
-            'min_delay_seconds': min(delays),
-            'max_delay_seconds': max(delays),
-            'measurements': self.measurements
-        }
-    
-    def _convert_to_datetime(self, timestamp: Union[datetime, str, float, object]) -> datetime:
-        """
-        Convert various timestamp formats to datetime object.
-        
-        Args:
-            timestamp: Timestamp in various formats
-            
-        Returns:
-            datetime: Converted datetime object
-        """
-        # Already a datetime
-        if isinstance(timestamp, datetime):
-            return timestamp
-        
-        # Unix timestamp (float)
-        if isinstance(timestamp, (int, float)):
-            return datetime.fromtimestamp(timestamp)
-        
-        # String timestamp
-        if isinstance(timestamp, str):
-            return self._parse_string_timestamp(timestamp)
-        
-        # Log entry object (has timestamp attribute)
-        if hasattr(timestamp, 'timestamp'):
-            return self._parse_string_timestamp(timestamp.timestamp)
-        
-        # Fallback - try to convert to string and parse
+        self.logger.info(f"Starting streaming event detection for patterns: {criteria.target_patterns}")
+
+        # Build structured criteria from EventCriteria
+        structured_criteria = self._build_structured_criteria(criteria)
+
         try:
-            return self._parse_string_timestamp(str(timestamp))
-        except:
-            raise ValueError(f"Cannot convert timestamp: {timestamp} (type: {type(timestamp)})")
-    
-    def _parse_string_timestamp(self, timestamp_str: str) -> datetime:
+            # Start streaming with all criteria
+            stream_id = self.logs_monitor.stream_log_entries(
+                log_file_path=self.log_file_path,
+                filter_patterns=criteria.target_patterns,
+                include_existing=True,
+                structured_criteria=structured_criteria
+            )
+
+            if not stream_id or stream_id == "placeholder_stream_id":
+                self.logger.warning("Streaming service not available")
+                return None
+
+            # Wait for events with timeout
+            matching_entries = self._wait_for_matching_entries(stream_id, criteria)
+
+            return matching_entries
+
+        except Exception as e:
+            self.logger.error(f"Error in streaming event detection: {e}")
+            return None
+        finally:
+            # Always clean up stream
+            if 'stream_id' in locals():
+                self.logs_monitor.stop_log_stream(stream_id)
+
+    def _build_structured_criteria(self, criteria: EventCriteria) -> Dict:
+        """Build structured criteria dict from EventCriteria object."""
+        structured = {}
+
+        if criteria.required_components:
+            # Use first component for filtering (streaming limitation)
+            structured["component"] = criteria.required_components[0]
+
+        if criteria.entry_types:
+            # Use first entry type for filtering
+            structured["type"] = criteria.entry_types[0]
+
+        if criteria.process_names:
+            # Use first process name for filtering
+            structured["process_name"] = criteria.process_names[0]
+
+        return structured if structured else None
+
+    def _wait_for_matching_entries(self, stream_id: str, criteria: EventCriteria) -> Optional[List[LogEntry]]:
         """
-        Parse string timestamp to datetime.
-        
-        Args:
-            timestamp_str: Timestamp string in various formats
-            
-        Returns:
-            datetime: Parsed datetime object
+        Wait for entries matching criteria with timeout.
+
+        Monitors the stream until we find enough matching entries or timeout.
         """
-        # Common timestamp formats
-        formats = [
-            '%Y-%m-%d %H:%M:%S.%f',      # 2025-08-15 18:27:13.916
-            '%Y-%m-%d %H:%M:%S',         # 2025-08-15 18:27:13
-            '%d %H:%M:%S.%f',            # 15 18:27:13.916 (day only)
-            '%d %H:%M:%S',               # 15 18:27:13 (day only)
-            '%H:%M:%S.%f',               # 18:27:13.916 (time only)
-            '%H:%M:%S',                  # 18:27:13 (time only)
+        start_time = time.time()
+        check_interval = 0.5  # Check every 500ms
+
+        while time.time() - start_time < criteria.timeout_seconds:
+            # Get current entries from stream
+            active_streams = self.logs_monitor.get_active_streams()
+
+            if stream_id not in active_streams:
+                self.logger.warning(f"Stream {stream_id} no longer active")
+                break
+
+            stream_info = active_streams[stream_id]
+            all_entries = stream_info.get('entries', [])
+
+            if not all_entries:
+                time.sleep(check_interval)
+                continue
+
+            # Filter entries by start time
+            relevant_entries = self._filter_by_time_range(all_entries, criteria.start_time)
+
+            if not relevant_entries:
+                time.sleep(check_interval)
+                continue
+
+            # Apply additional filtering
+            matching_entries = self._apply_additional_filtering(relevant_entries, criteria)
+
+            # Check if we have enough matches
+            if len(matching_entries) >= criteria.min_entries_required:
+                elapsed = time.time() - start_time
+                self.logger.info(f"Found {len(matching_entries)} matching entries after {elapsed:.2f}s")
+                return matching_entries
+
+            time.sleep(check_interval)
+
+        # Timeout reached
+        elapsed = time.time() - start_time
+        self.logger.warning(f"Timeout after {elapsed:.2f}s - found {len(matching_entries) if 'matching_entries' in locals() else 0} entries (needed {criteria.min_entries_required})")
+        return None
+
+    def _filter_by_time_range(self, entries: List[LogEntry], start_time: datetime) -> List[LogEntry]:
+        """Filter entries to only those after start_time."""
+        relevant_entries = []
+
+        for entry in entries:
+            if not entry.timestamp:
+                continue
+
+            try:
+                # Parse entry timestamp
+                entry_time = self._parse_timestamp(entry.timestamp)
+
+                # Only include entries after start time
+                if entry_time >= start_time:
+                    relevant_entries.append(entry)
+            except Exception as e:
+                self.logger.debug(f"Could not parse timestamp '{entry.timestamp}': {e}")
+                continue
+
+        return relevant_entries
+
+    def _apply_additional_filtering(self, entries: List[LogEntry], criteria: EventCriteria) -> List[LogEntry]:
+        """Apply additional filtering criteria that weren't handled by structured criteria."""
+        filtered_entries = entries
+
+        # Additional component filtering (if multiple components specified)
+        if criteria.required_components and len(criteria.required_components) > 1:
+            component_filtered = []
+            for entry in filtered_entries:
+                if any(comp.lower() in entry.component.lower() for comp in criteria.required_components):
+                    component_filtered.append(entry)
+            filtered_entries = component_filtered
+
+        # Message contains filtering
+        if criteria.message_contains:
+            message_filtered = []
+            for entry in filtered_entries:
+                if all(pattern.lower() in entry.message.lower() for pattern in criteria.message_contains):
+                    message_filtered.append(entry)
+            filtered_entries = message_filtered
+
+        # Message excludes filtering
+        if criteria.message_excludes:
+            exclude_filtered = []
+            for entry in filtered_entries:
+                if not any(pattern.lower() in entry.message.lower() for pattern in criteria.message_excludes):
+                    exclude_filtered.append(entry)
+            filtered_entries = exclude_filtered
+
+        # Additional entry type filtering (if multiple types specified)
+        if criteria.entry_types and len(criteria.entry_types) > 1:
+            type_filtered = []
+            for entry in filtered_entries:
+                if any(entry_type.lower() in entry.type.lower() for entry_type in criteria.entry_types):
+                    type_filtered.append(entry)
+            filtered_entries = type_filtered
+
+        # Additional process name filtering (if multiple names specified)
+        if criteria.process_names and len(criteria.process_names) > 1:
+            process_filtered = []
+            for entry in filtered_entries:
+                if any(proc.lower() in entry.process_name.lower() for proc in criteria.process_names):
+                    process_filtered.append(entry)
+            filtered_entries = process_filtered
+
+        return filtered_entries
+
+    def _parse_timestamp(self, timestamp_str: str) -> datetime:
+        """Parse timestamp string to datetime object."""
+        timestamp_formats = [
+            "%Y-%m-%d %H:%M:%S.%f",
+            "%Y-%m-%d %H:%M:%S",
+            "%d %H:%M:%S.%f",
+            "%d %H:%M:%S"
         ]
-        
-        for fmt in formats:
+
+        for fmt in timestamp_formats:
             try:
                 parsed_time = datetime.strptime(timestamp_str, fmt)
-                
-                # Handle day-only timestamps (add current year/month)
-                if fmt.startswith('%d'):
+
+                # For day-only timestamps, assume current year/month
+                if fmt.startswith("%d"):
                     current_time = datetime.now()
                     parsed_time = parsed_time.replace(
                         year=current_time.year,
                         month=current_time.month
                     )
-                
-                # Handle time-only timestamps (add current date)
-                elif fmt.startswith('%H'):
-                    current_time = datetime.now()
-                    parsed_time = parsed_time.replace(
-                        year=current_time.year,
-                        month=current_time.month,
-                        day=current_time.day
-                    )
-                
+
                 return parsed_time
-                
             except ValueError:
                 continue
-        
+
         # If all parsing fails, return current time
-        raise ValueError(f"Could not parse timestamp: {timestamp_str}")
-    
-    def _format_delay(self, delay_seconds: float) -> str:
-        """
-        Format delay in human-readable format.
-        
-        Args:
-            delay_seconds: Delay in seconds
-            
-        Returns:
-            str: Human-readable delay format
-        """
-        if delay_seconds < 0:
-            return f"-{self._format_delay(-delay_seconds)}"
-        
-        if delay_seconds < 1:
-            return f"{delay_seconds * 1000:.1f}ms"
-        elif delay_seconds < 60:
-            return f"{delay_seconds:.3f}s"
-        elif delay_seconds < 3600:
-            minutes = int(delay_seconds // 60)
-            seconds = delay_seconds % 60
-            return f"{minutes}m {seconds:.1f}s"
-        else:
-            hours = int(delay_seconds // 3600)
-            remaining = delay_seconds % 3600
-            minutes = int(remaining // 60)
-            seconds = remaining % 60
-            return f"{hours}h {minutes}m {seconds:.1f}s"
+        self.logger.warning(f"Could not parse timestamp: {timestamp_str}")
+        return datetime.now()

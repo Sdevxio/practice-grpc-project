@@ -15,8 +15,8 @@ from typing import Optional, List, Dict, Callable, Any
 import grpc
 from grpc_client_sdk.core.grpc_client_manager import GrpcClientManager
 from test_framework.utils import get_logger
-from test_framework.utils.handlers.file_analayzer.parser import LogParser
-from test_framework.utils.handlers.file_analayzer.extractor import LogExtractor
+from test_framework.utils.handlers.file_analyzer.extractor import LogExtractor
+from test_framework.utils.handlers.file_analyzer.parser import LogParser
 
 
 class LogsMonitoringServiceClient:
@@ -86,6 +86,7 @@ class LogsMonitoringServiceClient:
             }
 
         self.logger.info(f"Starting tap correlation streaming for patterns: {expected_patterns}")
+        self.logger.info(f"Tap start time: {tap_start_time}, correlation window: {correlation_window_seconds}s")
 
         correlation_results = {
             'found_entries': {},
@@ -109,37 +110,39 @@ class LogsMonitoringServiceClient:
             if stream_id and stream_id != "placeholder_stream_id":
                 start_time = time.time()
                 found_count = 0
-
-                # Monitor the stream for correlation
+                time.sleep(1)  # Give the streaming thread a moment to buffer entries
                 with self.stream_lock:
                     if stream_id in self.active_streams:
                         stream_info = self.active_streams[stream_id]
                         entries = stream_info.get('entries', [])
-
+                        self.logger.info(f"[Tap correlation] Buffered {len(entries)} entries for correlation.")
+                        for i, entry in enumerate(entries):
+                            self.logger.info(f"[Tap correlation] Entry {i+1}: {entry.timestamp} - {entry.message}")
                         for i, pattern in enumerate(expected_patterns):
+                            # Only consider entries after tap_start_time
+                            matched_entry = None
                             for entry in entries:
-                                if pattern.lower() in entry.message.lower():
-                                    entry_time = self._parse_entry_timestamp(entry.timestamp)
-                                    delay_seconds = (entry_time - tap_start_time).total_seconds()
-
-                                    correlation_results['found_entries'][f"pattern_{i}"] = {
-                                        'entry': entry,
-                                        'pattern_matched': pattern,
-                                        'delay_seconds': delay_seconds,
-                                        'correlation_time': entry_time,
-                                        'message': entry.message
-                                    }
-                                    found_count += 1
-                                    break
+                                entry_time = self._parse_entry_timestamp(entry.timestamp)
+                                if entry_time >= tap_start_time and pattern.lower() in entry.message.lower():
+                                    if (matched_entry is None) or (entry_time > self._parse_entry_timestamp(matched_entry.timestamp)):
+                                        matched_entry = entry
+                            if matched_entry:
+                                entry_time = self._parse_entry_timestamp(matched_entry.timestamp)
+                                delay_seconds = (entry_time - tap_start_time).total_seconds()
+                                self.logger.info(f"[Tap correlation] Pattern '{pattern}' matched at {entry_time} (delay: {delay_seconds:.3f}s)")
+                                correlation_results['found_entries'][f"pattern_{i}"] = {
+                                    'entry': matched_entry,
+                                    'pattern_matched': pattern,
+                                    'delay_seconds': delay_seconds,
+                                    'correlation_time': entry_time,
+                                    'message': matched_entry.message
+                                }
+                                found_count += 1
 
                 correlation_results['search_completed'] = found_count == len(expected_patterns)
                 correlation_results['timeout_reached'] = time.time() - start_time >= correlation_window_seconds
-
-                # Stop the stream
                 self.stop_log_stream(stream_id)
-
                 self.logger.info(f"Tap correlation found {found_count}/{len(expected_patterns)} patterns")
-
         except Exception as e:
             self.logger.error(f"Error in tap correlation streaming: {e}")
             correlation_results['timeout_reached'] = True
@@ -189,19 +192,19 @@ class LogsMonitoringServiceClient:
                 try:
                     # Create the gRPC call and store it for cancellation
                     grpc_call = self.stub.StreamLogEntries(request)
-                    
+
                     # Store the call in active streams for cancellation
                     with self.stream_lock:
                         if stream_id in self.active_streams:
                             self.active_streams[stream_id]['grpc_call'] = grpc_call
-                    
+
                     # Process streaming responses
                     for response in grpc_call:
                         # Check if we should stop (thread-safe check)
                         if self.stop_flags.get(stream_id, False):
                             self.logger.info(f"Stream {stream_id} stopping due to stop flag")
                             break
-                            
+
                         parsed_entry = None
 
                         # Handle both old and new response formats
@@ -226,11 +229,11 @@ class LogsMonitoringServiceClient:
                                     else:
                                         matches = False
                                         break
-                                
+
                                 # Skip entry if it doesn't match criteria
                                 if not matches:
                                     continue
-                            
+
                             # Store parsed entry
                             entries_buffer.append(parsed_entry)
 
@@ -284,7 +287,7 @@ class LogsMonitoringServiceClient:
         try:
             # Set stop flag first to signal the stream processor to stop
             self.stop_flags[stream_id] = True
-            
+
             # Cancel gRPC call if available
             with self.stream_lock:
                 if stream_id in self.active_streams:
@@ -295,7 +298,7 @@ class LogsMonitoringServiceClient:
                             self.logger.debug(f"Cancelled gRPC call for stream {stream_id}")
                         except Exception as cancel_error:
                             self.logger.debug(f"Error cancelling gRPC call: {cancel_error}")
-            
+
             # Send stop request to server (if available)
             try:
                 from generated import log_streaming_service_pb2
