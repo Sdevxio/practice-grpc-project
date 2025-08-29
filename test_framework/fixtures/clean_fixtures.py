@@ -12,6 +12,8 @@ Layer 4: Convenience (sugar for common patterns)
 import pytest
 from datetime import datetime
 from test_framework.grpc_session.session_manager import GrpcSessionManager
+from test_framework.logging_manager import create_login_manager
+from test_framework.logging_manager.grpc_session_login_adapter import create_login_adapter
 from test_framework.utils.ui_timing_calculator.timing_calculator import TimingCalculator
 from test_framework.utils import get_logger
 
@@ -86,8 +88,6 @@ def login_manager_factory():
     Returns a function that takes a GrpcSessionManager and returns LoginManager.
     """
     def create_login_manager_with_session(grpc_session_manager, enable_tapping=True):
-        from test_framework.logging_manager.grpc_session_login_adapter import create_login_adapter
-        from test_framework.logging_manager.login_manager import create_login_manager
         
         logger = get_logger("login_manager_factory")
         
@@ -141,6 +141,52 @@ def login_manager_with_session(login_manager_factory):
     return login_manager_factory
 
 
+@pytest.fixture(scope="function", autouse=True)
+def ensure_clean_logout_before_test(grpc_with_user, login_manager_with_session, test_config, test_logger):
+    """
+    Auto-run fixture that ensures clean logout state BEFORE every test starts.
+    
+    This fixture runs automatically before each test to:
+    1. Check if anyone is logged in
+    2. Log out any current user BEFORE the test
+    3. Ensure test starts from clean logout state
+    
+    Use autouse=True so it runs automatically for all tests in the module.
+    """
+    test_logger.info("🧹 Auto-ensuring clean logout state before test")
+    
+    # Create login manager using the shared session
+    login_mgr = login_manager_with_session(grpc_with_user, test_config.get("enable_tapping", True))
+    
+    # Check if anyone is logged in and log them out
+    try:
+        current_user = login_mgr.get_current_user()
+        if current_user:
+            test_logger.info(f"🚪 Found user '{current_user}' logged in - logging out before test")
+            success = login_mgr.ensure_logged_out(current_user)
+            if success:
+                test_logger.info(f"✅ Successfully logged out user '{current_user}' before test")
+            else:
+                test_logger.warning(f"⚠️ Failed to logout user '{current_user}' - test may be affected")
+        else:
+            test_logger.info("✅ No user logged in - clean state confirmed")
+    except Exception as e:
+        test_logger.warning(f"⚠️ Error checking/ensuring logout state: {e}")
+    
+    test_logger.info("✅ Clean logout state ensured - test ready to start fresh")
+    
+    yield  # Test runs here with clean logout state
+    
+    # Post-test cleanup: ensure logout again
+    try:
+        current_user = login_mgr.get_current_user()
+        if current_user:
+            test_logger.info(f"🧹 Post-test cleanup: logging out user '{current_user}'")
+            login_mgr.ensure_logged_out(current_user)
+    except Exception as e:
+        test_logger.warning(f"Post-test cleanup warning: {e}")
+
+
 # =============================================================================
 # HELPER: Get all needed fixtures for your test pattern
 # =============================================================================
@@ -149,15 +195,20 @@ def get_test_fixtures():
     """
     Helper to show what fixtures are available for your test pattern:
     
+    # Standard pattern with guaranteed fresh start:
     def test_login_timing(grpc_with_user, login_manager_with_session, 
                          logs_client, timing_calc, test_config, test_logger):
-        # Your test here
+        # Test automatically starts with clean logout state thanks to
+        # ensure_clean_logout_before_test fixture (autouse=True)
+        login_mgr = login_manager_with_session(grpc_with_user)
+        # ... rest of test
     """
     return [
-        "grpc_with_user",           # gRPC session with user setup
-        "login_manager_with_session",  # Factory for login manager
-        "logs_client",              # Log streaming client  
-        "timing_calc",              # Timing calculator
-        "test_config",              # Configuration (from config_fixtures)
-        "test_logger"               # Logger (from logging_fixtures)
+        "grpc_with_user",                     # gRPC session with user setup
+        "login_manager_with_session",         # Factory for login manager
+        "logs_client",                        # Log streaming client  
+        "timing_calc",                        # Timing calculator
+        "test_config",                        # Configuration (from config_fixtures)
+        "test_logger",                        # Logger (from logging_fixtures)
+        "ensure_clean_logout_before_test"     # Auto-runs to ensure clean state (autouse=True)
     ]

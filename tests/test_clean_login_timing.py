@@ -9,19 +9,24 @@ from datetime import datetime
 
 
 def test_login_timing_simple(grpc_with_user, login_manager_with_session, logs_client, timing_calc, test_config, test_logger):
-    """Your scenario: logs monitoring + tap login + timing - clean architecture."""
+    """Your scenario: logs monitoring + tap login + timing - clean architecture with GUARANTEED fresh start.
     
-    test_logger.info("🚀 Starting login timing test with CLEAN architecture")
+    Note: The ensure_clean_logout_before_test fixture runs automatically (autouse=True) 
+    to ensure this test starts from a clean logout state.
+    """
     
-    # 1. Start gRPC and logs (grpc_with_user already has user setup)
+    test_logger.info("🚀 Starting login timing test with CLEAN architecture and GUARANTEED fresh state")
+    test_logger.info("   (Auto-logout fixture has already ensured clean state)")
+    
+    # 1. Start logs monitoring
     log_file_path = test_config.get("log_file_path", "/Users/admin/PA/dynamic_log_generator/dynamic_test.log")
     stream_id = logs_client.stream_log_entries(log_file_path)
     test_logger.info(f"📊 Started log stream: {stream_id}")
     
-    # 2. Tap login with timing
-    login_mgr = login_manager_with_session(grpc_with_user)  # Uses same session!
+    # 2. Create login manager and start login process (test starts from clean logout state)
+    login_mgr = login_manager_with_session(grpc_with_user, test_config.get("enable_tapping", True))
     expected_user = test_config["expected_user"]
-    test_logger.info(f"🔐 Starting login process for user: {expected_user}")
+    test_logger.info(f"🔐 Starting login process for user: {expected_user} (from guaranteed clean logout state)")
     
     tap_time = datetime.now()
     test_logger.info(f"⏰ Tap timestamp recorded: {tap_time.strftime('%H:%M:%S.%f')[:-3]}")
