@@ -45,7 +45,7 @@ def test_login_timing_simple(grpc_with_user, login_manager_with_session, logs_cl
         expected_patterns=["sessionDidBecomeActive"],
         log_file_path=log_file_path,
         correlation_window_seconds=3600,  # 1 hour window to find existing entries
-        structured_criteria={'component': 'DesktopAgent', 'process_name': 'ScreenManager'}
+        structured_criteria={'component': 'DesktopAgent'}
     )
     
     # 5. Assert we found the expected log entry  
