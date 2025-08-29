@@ -1,54 +1,33 @@
 """
 Fixtures package for the test framework.
 
-This package contains all pytest fixtures organized by domain:
-- logging_fixtures: Global logging infrastructure
-- config_fixtures: Test configuration  
-- login_fixtures: LoginManager pytest fixtures
-
-The fixtures are designed to be:
-- Modular and focused on specific concerns
-- Easy to import and use in tests
-- Well-documented with clear usage examples
-- Following proper pytest fixture patterns
+Domain-specific fixture architecture:
+- config_fixtures: Test configuration and hardware settings
+- session_fixtures: gRPC session management  
+- monitoring_fixtures: Log streaming and event monitoring
+- hardware_fixtures: Tapping and physical interactions
+- workflow_fixtures: Combined workflow patterns
 """
 
-# Import logging fixtures
-from .logging_fixtures import *
-
-# Import configuration fixtures
-from .config_fixtures import test_config
-
-# Import login fixtures (following pytest patterns)
-from .login_fixtures import (
-    grpc_session_manager,
-    login_adapter,
-    login_manager, 
-    clean_logout_state,
-    logged_in_user,
-    logged_in_testuser,
-    login_state_manager,
-    login_health_check,
-    require_tapping
-)
+from .config_fixtures import test_config, hardware_config
+from .session_fixtures import session_manager, authenticated_session
+from .hardware_fixtures import hardware_controller
+from .workflow_fixtures import monitoring_ready_workflow, session_first_workflow, clean_state_workflow
 
 __all__ = [
-    # Logging fixtures (from logging_fixtures.py)
-    'setup_logging',
-    'test_logger', 
-    'debug_logger',
-    
-    # Configuration fixtures (from config_fixtures.py)
+    # Configuration
     'test_config',
+    'hardware_config',
     
-    # Login fixtures (from login_fixtures.py)
-    'grpc_session_manager',
-    'login_adapter',
-    'login_manager',
-    'clean_logout_state',
-    'logged_in_user',
-    'logged_in_testuser', 
-    'login_state_manager',
-    'login_health_check',
-    'require_tapping',
+    # Session management
+    'session_manager', 
+    'authenticated_session',
+    
+    # Hardware
+    'hardware_controller',
+    
+    # Workflows
+    'monitoring_ready_workflow',
+    'session_first_workflow', 
+    'clean_state_workflow',
 ]
