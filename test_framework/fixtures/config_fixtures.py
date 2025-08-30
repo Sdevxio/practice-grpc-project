@@ -23,10 +23,6 @@ def test_config():
     test_users = station_loader.get_test_users()
     test_cards = station_loader.get_test_cards()
     e2e_defaults = station_loader.get_e2e_defaults()
-    try:
-        domain = station_loader.get_domain()
-    except AttributeError:
-        domain = None
 
     expected_user = (
         os.environ.get("TEST_USER") or
@@ -46,10 +42,9 @@ def test_config():
         "expected_card": expected_card,
         "login_timeout": e2e_defaults.get('login_timeout', 60),
         "station_config": station_config,
-        "log_file_path": e2e_defaults.get('log_file_path', '/Library/Logs/testlogfiles.log'),
+        "log_file_path": e2e_defaults.get("log_file_path", "/Users/admin/pro-mac-client-test-fixtures/dynamic_log_generator/dynamic_test.log"),
         "test_users": test_users,
         "e2e_defaults": e2e_defaults,
-        "domains": domain,
     }
 
 

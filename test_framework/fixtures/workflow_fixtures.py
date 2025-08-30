@@ -39,7 +39,7 @@ def monitoring_ready_workflow(test_config, test_logger):
             "session_factory": lambda: GrpcSessionManager(test_config["station_id"]),
             "hardware_factory": lambda: SimpleTappingManager(
                 station_id=test_config["station_id"],
-                enable_tapping=True,
+                enable_tapping=False,
                 logger=test_logger
             )
         }
