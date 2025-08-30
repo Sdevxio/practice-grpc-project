@@ -7,7 +7,7 @@ simple fixtures that handle all the complexity automatically.
 import time
 from datetime import datetime, timedelta
 
-from test_framework.utils.handlers.file_analayzer import LogMonitorStreaming, EventCriteria
+from test_framework.utils.ui_timing_calculator.timing_calculator import LogMonitorStreaming, EventCriteria
 
 
 class TestLogsMonitorService:

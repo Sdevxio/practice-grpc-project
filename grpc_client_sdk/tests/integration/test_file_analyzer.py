@@ -3,8 +3,8 @@ import os
 from grpc_client_sdk.core.grpc_client_manager import GrpcClientManager
 from grpc_client_sdk.services.file_transfer_service_client import FileTransferServiceClient
 from test_framework.utils.handlers.artifacts.artifacts_handler import save_to_artifacts
-from test_framework.utils.handlers.file_analayzer import LogExtractor
-from test_framework.utils.handlers.file_analayzer import LogParser
+from test_framework.utils.handlers.file_analyzer import LogExtractor
+from test_framework.utils.handlers.file_analyzer import LogParser
 
 
 def test_extract_card_ids(setup, test_logger):

@@ -108,10 +108,41 @@ class LoggerManager:
 
             logging.getLogger = patched_getLogger
 
-        # Console handler
+        # Console handler with cleaner formatter
         console = logging.StreamHandler()
-        console.setFormatter(formatter)
+        clean_formatter = logging.Formatter(
+            '%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+            datefmt='%H:%M:%S'
+        )
+        console.setFormatter(clean_formatter)
         console.setLevel(logging.INFO)
+        
+        # Add noise filter for cleaner output
+        class NoiseFilter(logging.Filter):
+            """Filter out repetitive noise messages."""
+            def filter(self, record):
+                noisy_phrases = [
+                    "Resetting tapper to home position",
+                    "Using HTTP as primary protocol", 
+                    "Connected via HTTP (fallback from MQTT)",
+                    "Tapper connected via HTTP",
+                    "Station 'station1' connected via HTTP",
+                    "Attempting to connect to 127.0.0.1",
+                    "Successfully connected to gRPC server",
+                    "Successfully registered client",
+                    "Waiting for user",
+                    "logged in on port",
+                    "Building session context",
+                    "gRPC session established",
+                    "Retrieved logged-in user info",
+                    "Creating gRPC session",
+                    "Connecting to root services",
+                    "Connected to root services"
+                ]
+                message = record.getMessage()
+                return not any(phrase in message for phrase in noisy_phrases)
+        
+        console.addFilter(NoiseFilter())
         root_logger.addHandler(console)
 
         # File handler
