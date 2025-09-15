@@ -23,7 +23,7 @@ class GrpcClientManager:
         stub = GrpcClientManager.get_stub("root", SomeServiceStub)
     """
     _clients: Dict[str, GrpcClient] = {}
-    _logger = get_logger('grpc_client_manager')
+    _logger = get_logger('framework.grpc_client_manager')
 
     @classmethod
     def register_clients(cls, name: str, target: str) -> bool:
@@ -85,41 +85,10 @@ class GrpcClientManager:
         if not client:
             raise RuntimeError(f"gRPC client '{name}' is not registered")
         try:
-            # Check if client is still connected, attempt reconnect if not
-            if not client.is_connected():
-                cls._logger.warning(f"Client '{name}' disconnected, attempting to reconnect...")
-                if not client.connect():
-                    raise RuntimeError(f"Failed to reconnect client '{name}'")
-                cls._logger.info(f"Successfully reconnected client '{name}'")
-
             return client.get_stubs(stub_class)
         except RuntimeError as e:
             cls._logger.error(f"Failed to get stub {stub_class.__name__} for client '{name}': {e}")
             raise
-
-    @classmethod
-    def remove_client(cls, name: str) -> bool:
-        """
-        Remove a specific client by name.
-        
-        :param name: Name of the client to remove
-        :return: True if client was removed, False if not found
-        """
-        if name in cls._clients:
-            client = cls._clients[name]
-            try:
-                # Close the connection gracefully
-                if hasattr(client, 'channel') and client.channel:
-                    client.channel.close()
-            except Exception as e:
-                cls._logger.warning(f"Error closing connection for client '{name}': {e}")
-            
-            del cls._clients[name]
-            cls._logger.info(f"Removed client '{name}'")
-            return True
-        else:
-            cls._logger.warning(f"Client '{name}' not found for removal")
-            return False
 
     @classmethod
     def clear(cls) -> None:

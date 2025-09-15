@@ -40,7 +40,7 @@ class RegistryServiceClient:
         None, a default logger is created.
         """
         self.client_name = client_name
-        self.logger = logger or get_logger(f"RegistryServiceClient[{client_name}]")
+        self.logger = logger or get_logger(f"service.registry.{client_name}")
         self.stub: Optional[RegistryServiceStub] = None
         self.host: Optional[str] = None  # Used in SessionContextBuilder if needed
 
@@ -126,3 +126,66 @@ class RegistryServiceClient:
         except Exception as e:
             self.logger.error(f"Failed to list agents: {e}")
             return []
+
+    def deploy_agent(self, username: str, timeout: int = 30) -> Optional[Dict[str, any]]:
+        """
+        Deploy agent immediately for specified user.
+        This method triggers rapid agent deployment for dynamic user authentication scenarios.
+        
+        :param username: macOS username to deploy agent for
+        :param timeout: Timeout in seconds for deployment operation
+        :return: dict with agent info if successful, None if failed
+        
+        Example:
+            client = RegistryServiceClient(client_name="root")
+            client.connect()
+            # After user taps card and logs in:
+            agent_info = client.deploy_agent("testuser1")
+            if agent_info:
+                print(f"Agent deployed on port {agent_info['port']}")
+        """
+        if not self.stub:
+            raise RuntimeError("RegistryServiceClient not connected.")
+
+        try:
+            self.logger.info(f"Requesting rapid agent deployment for user: {username}")
+            request = agent_registry_service_pb2.AgentIdentifier(username=username)
+            
+            # Call with timeout
+            import grpc
+            response = self.stub.DeployAgent(request, timeout=timeout)
+            
+            if response.port > 0:  # Agent successfully deployed and registered
+                agent_info = {
+                    "username": response.username,
+                    "uid": response.uid,
+                    "port": response.port,
+                    "timestamp": response.timestamp
+                }
+                self.logger.info(f"Agent deployed successfully for {username} on port {response.port}")
+                return agent_info
+            else:
+                # Agent deployed but not yet registered - retry get_agent
+                self.logger.info(f"Agent deployed for {username}, waiting for registration...")
+                import time
+                for i in range(5):  # Wait up to 5 seconds for registration
+                    time.sleep(1)
+                    agent_info = self.get_agent(username)
+                    if agent_info:
+                        self.logger.info(f"Agent registered for {username} on port {agent_info['port']}")
+                        return agent_info
+                
+                self.logger.warning(f"Agent deployed for {username} but registration not detected")
+                return None
+                
+        except grpc.RpcError as e:
+            if e.code() == grpc.StatusCode.DEADLINE_EXCEEDED:
+                self.logger.error(f"Deployment timeout for user {username}")
+            elif e.code() == grpc.StatusCode.NOT_FOUND:
+                self.logger.error(f"User {username} not found or cannot be deployed")
+            else:
+                self.logger.error(f"Deployment failed for {username}: {e.details()}")
+            return None
+        except Exception as e:
+            self.logger.error(f"Unexpected error deploying agent for {username}: {e}")
+            return None

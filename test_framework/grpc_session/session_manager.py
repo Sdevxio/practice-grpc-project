@@ -12,6 +12,7 @@ from test_framework.grpc_session.context_builder import SessionContextBuilder
 from test_framework.grpc_session.session_context import SessionContext
 from test_framework.utils import get_logger
 from test_framework.utils.loaders.station_loader import StationLoader
+from test_framework.utils.logger_settings.performance_timing import time_session_operation
 
 
 class GrpcSessionManager:
@@ -26,9 +27,17 @@ class GrpcSessionManager:
     - Provide logged-in user information via command service
     """
 
-    def __init__(self, station_id: str, logger: Optional[logging.Logger] = None):
+    def __init__(self, station_id: str, logger: Optional[logging.Logger] = None, test_context: str = None):
         self.station_id = station_id
-        self.logger = logger or get_logger(f"grpc_session_manager [{station_id}]")
+        self.test_context = test_context
+        
+        # Create correlated logger name based on context
+        if test_context:
+            logger_name = f"test.{test_context}.session.{station_id}"
+        else:
+            logger_name = f"session.{station_id}.manager"
+            
+        self.logger = logger or get_logger(logger_name)
         self.root_target = StationLoader().get_grpc_target(station_id)
         GrpcClientManager.register_clients(name="root", target=self.root_target)
         self.root_registry = RegistryServiceClient(client_name="root", logger=self.logger)
@@ -118,7 +127,8 @@ class GrpcSessionManager:
             username=username,
             agent_port=agent_port,
             host=self.root_target.split(":")[0],
-            logger=self.logger
+            logger=self.logger,
+            test_context=self.test_context
         )
 
         return session_context

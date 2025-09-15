@@ -42,7 +42,7 @@ class ConnectionServiceClient:
         :raises RuntimeError: If the underlying client is not registered in GrpcClientManager.
         """
         self.client_name = client_name
-        self.logger = logger or get_logger(f"ConnectionServiceClient-{client_name}")
+        self.logger = logger or get_logger(f"service.connection.{client_name}")
         self.stub: Optional[ConnectionServiceStub] = None
 
     def connect(self):

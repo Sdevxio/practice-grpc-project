@@ -22,7 +22,7 @@ class GrpcClient:
         actual_port (int): The actual port used for connection.
     """
 
-    DEFAULT_FALLBACK_PORTS = [50051, 50052, 50053, 55000, 55001]
+    DEFAULT_FALLBACK_PORTS = [50051, 50052, 50053]  # Removed agent ports 55000, 55001 to prevent cross-user connections
 
     def __init__(self, host: str, port: int, logger: Optional[Logger] = None):
         """
@@ -35,7 +35,7 @@ class GrpcClient:
         """
         self.host = host
         self.port = port
-        self.logger = logger or get_logger('grpc_client')
+        self.logger = logger or get_logger('framework.grpc_client')
         self.target = f"{self.host}:{self.port}"
         self.channel: Optional[grpc.Channel] = None
         self.stubs: Dict[str, Any] = {}
@@ -69,16 +69,10 @@ class GrpcClient:
             try:
                 self.logger.info(f"Attempting to connect to {target}")
                 self.channel = grpc.insecure_channel(
-                    target,
+                    self.target,
                     options=[
                         ("grpc.max_send_message_length", 100 * 1024 * 1024),  # 100MB
                         ("grpc.max_receive_message_length", 100 * 1024 * 1024),
-                        ("grpc.keepalive_time_ms", 10000),
-                        ("grpc.keepalive_timeout_ms", 5000),
-                        ("grpc.keepalive_permit_without_calls", True),
-                        ("grpc.http2.max_pings_without_data", 0),
-                        ("grpc.http2.min_time_between_pings_ms", 10000),
-                        ("grpc.http2.min_ping_interval_without_data_ms", 300000)
                     ]
                 )
 
@@ -107,38 +101,6 @@ class GrpcClient:
         self.logger.error(f"Failed to connect to gRPC server at {self.host} on any port:\n{error_summary}")
         self.connected = False
         return False
-
-    def is_connected(self) -> bool:
-        """
-        Check if the client is currently connected to the gRPC server.
-
-        :return: True if connected, False otherwise.
-        """
-        if not self.connected or not self.channel:
-            return False
-
-        try:
-            # Test the connection with a quick connectivity check
-            grpc.channel_ready_future(self.channel).result(timeout=1)
-            return True
-        except Exception:
-            self.connected = False
-            return False
-
-    def disconnect(self) -> None:
-        """
-        Disconnect from the gRPC server and clean up resources.
-        """
-        if self.channel:
-            try:
-                self.channel.close()
-            except Exception as e:
-                self.logger.warning(f"Error closing channel: {e}")
-
-        self.channel = None
-        self.connected = False
-        self.stubs.clear()
-        self.logger.info(f"Disconnected from {self.host}:{self.actual_port}")
 
     def get_stubs(self, stubs_class: Any) -> Any:
         """

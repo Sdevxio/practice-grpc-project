@@ -61,7 +61,7 @@ class ConfigurationManager:
             if ConfigurationManager._initialized:
                 return
 
-            self.logger = get_logger("ConfigurationManager")
+            self.logger = get_logger("framework.loader.config_manager")
 
             # Auto-detect config root if not provided (only log once)
             if config_root is None:
@@ -581,7 +581,7 @@ class LegacyStationLoader:
 
     def __init__(self, config_name="stations"):
         """Initialize with legacy interface."""
-        self.logger = get_logger("LegacyStationLoader")
+        self.logger = get_logger("framework.loader.legacy_station")
         self.config_manager = ConfigurationManager()
 
         # Log deprecation warning

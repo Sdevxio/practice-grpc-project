@@ -8,8 +8,8 @@ but uses the new ConfigurationManager internally for better organization.
 from typing import Dict, Any, List
 import warnings
 
-from test_framework.utils import (get_logger)
-from test_framework.utils.loaders.config_manager import (ConfigurationManager)
+from test_framework.utils import get_logger
+from test_framework.utils.loaders.config_manager import ConfigurationManager
 
 
 class StationLoader:
@@ -22,7 +22,7 @@ class StationLoader:
 
     def __init__(self, config_name="stations"):
         """Initialize StationLoader with singleton ConfigurationManager."""
-        self.logger = get_logger("StationLoader")
+        self.logger = get_logger("framework.loader.station")
 
         # Use singleton instance instead of creating new one
         try:

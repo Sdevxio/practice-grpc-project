@@ -7,7 +7,7 @@ for the test framework while maintaining clear separation of concerns.
 import pytest
 
 pytest_plugins = [
-    "test_framework.fixtures.fixtures",
+    "test_framework.hooks.logging_context_hook",
 ]
 
 

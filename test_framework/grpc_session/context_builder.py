@@ -15,7 +15,7 @@ from test_framework.grpc_session.session_context import SessionContext
 class SessionContextBuilder:
 
     @staticmethod
-    def build(username: str, agent_port: int, host, logger) -> SessionContext:
+    def build(username: str, agent_port: int, host, logger, test_context: str = None) -> SessionContext:
         """Builds a session context for a given user and agent port.
         This method registers gRPC clients and initializes service contexts for both root and user levels.
 
@@ -30,7 +30,7 @@ class SessionContextBuilder:
         logger.debug(f"Registered user client '{username}' at {host}:{agent_port}")  # DEBUG not INFO
 
         # Register root context services
-        root = ServiceContext(client_name="root", logger=logger)
+        root = ServiceContext(client_name="root", logger=logger, test_context=test_context)
         for name, cls in [
             ("file_transfer", FileTransferServiceClient),
             ("command", CommandServiceClient),
@@ -40,7 +40,7 @@ class SessionContextBuilder:
             root.register_service(name, cls)
 
         # Register user context services
-        user = ServiceContext(client_name=username, logger=logger)
+        user = ServiceContext(client_name=username, logger=logger, test_context=test_context)
         for name, cls in [
             ("file_transfer", FileTransferServiceClient),
             ("command", CommandServiceClient),

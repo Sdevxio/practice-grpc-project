@@ -43,7 +43,7 @@ class ScreenCaptureServiceClient:
         None, a default logger is created.
         """
         self.client_name = client_name
-        self.logger = logger or get_logger(f"ScreenCaptureServiceClient[{client_name}]")
+        self.logger = logger or get_logger(f"service.screen_capture.{client_name}")
         self.stub: Optional[ScreenCaptureServiceStub] = None
 
     def connect(self) -> None:

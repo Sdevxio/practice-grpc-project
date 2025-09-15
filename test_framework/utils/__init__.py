@@ -1,6 +1,5 @@
-# Create singleton instance
 from test_framework.utils.logger_settings.logger_manager import LoggerManager
-
+# Create singleton instance
 _logger_manager = LoggerManager()
 # Export public functions
 get_logger = _logger_manager.get_logger

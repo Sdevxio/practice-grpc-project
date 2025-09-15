@@ -2,7 +2,7 @@
 defaults:
   grpc-server:
     port: 50051
-    fallback_ports: [ 50052, 50053, 55000 ]
+    fallback_ports: [ 50052, 50053 ]  # Removed 55000 to prevent agent port conflicts
 
 # MacOS endpoints in the test labs
 endpoints:
@@ -41,7 +41,7 @@ endpoints:
       location: "Custom gRPC Endpoint"
       grpc-server:
         port: 50055
-        fallback_ports: [ 50052, 50053, 55000 ]
+        fallback_ports: [ 50052, 50053 ]  # Removed 55000 to prevent agent port conflicts
       status: "maintenance"
       notes: "Custom gRPC endpoint for testing purposes, currently in maintenance mode"
 
