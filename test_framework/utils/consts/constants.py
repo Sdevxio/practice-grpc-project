@@ -24,4 +24,4 @@ TESSERACT_OCR_PATH = "/opt/homebrew/bin/tesseract"
 
 # Remote log path for file logs on macOS
 REMOTE_LOG_NAME = "dynamic_test.log"
-REMOTE_LOG_PATH = f"/Users/admin/python-practice/dynamic_log_generator/{REMOTE_LOG_NAME}"
+REMOTE_LOG_PATH = f"/Users/admin/PythonProject/PythonProject/practice-grpc-project/dynamic_log_generator/dynamic_test.log"
