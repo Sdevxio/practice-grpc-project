@@ -1,7 +1,7 @@
 import pytest
 import time
 
-@pytest.mark.auto_manage(False)
+@pytest.mark.auto_login(False)
 def test_card_tap_authentication_user_switch(login_state, test_config, test_logger):
     """Test to verify user switching via card taps."""
     user_2 = 'macos_lab_1'
@@ -40,10 +40,10 @@ def test_card_tap_authentication_user_switch(login_state, test_config, test_logg
     # time.sleep(5.0)
     # login_state.cleanup(user_2)
 
-@pytest.mark.auto_manage(False)
+@pytest.mark.auto_login(False)
 def test_monitor_single(login_state, test_logger, test_config):
     """Test to verify single user authentication log entries."""
 
 
-    result = login_state.get_console_user_root()
+    result = login_state.get_console_user_root('admin')
     test_logger.info(f"Current console: {result}")

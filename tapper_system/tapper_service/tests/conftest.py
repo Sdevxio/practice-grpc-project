@@ -35,7 +35,7 @@ def reset_hardware_state(protocol):
         warnings.warn(f"Failed to reset hardware state: {e}")
 
 
-# Optional: simple logger fixture for test output
+# Optional: simple logger fixtures for test output
 @pytest.fixture
 def test_logger(request):
     import logging

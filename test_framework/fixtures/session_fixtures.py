@@ -7,9 +7,9 @@ import time
 @pytest.fixture(scope="function")
 def session_manager(test_config, request):
     """
-    Session manager fixture that provides a GrpcSessionManager and SessionContext.
+    Session manager fixtures that provides a GrpcSessionManager and SessionContext.
 
-    This fixture assumes login has already happened via the login_state fixture.
+    This fixtures assumes login has already happened via the login_state fixtures.
     It only handles gRPC session creation and management.
     """
     test_name = request.node.name
@@ -20,7 +20,7 @@ def session_manager(test_config, request):
         logger.info(f"Session manager using correlation ID: {correlation_id}")
 
     expected_user = test_config.get("expected_user")
-    login_timeout = test_config.get("session_timeout", 15)
+    login_timeout = test_config.get("session_timeout", 10)
     manager = GrpcSessionManager(
         station_id=test_config["station_id"],
         logger=logger,

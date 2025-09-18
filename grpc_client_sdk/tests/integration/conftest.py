@@ -26,7 +26,7 @@ def setup_logging():
 
 @pytest.fixture
 def setup(setup_logging):
-    """Example fixture to get test station config."""
+    """Example fixtures to get test station config."""
     stations = (StationLoader()
                 .get_station_endpoint("station1" , "grpc"))
     yield stations

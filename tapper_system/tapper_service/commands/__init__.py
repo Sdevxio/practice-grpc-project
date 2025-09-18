@@ -8,11 +8,11 @@ This package contains both modern and legacy tapper operation sequences:
 
 Usage:
     # Modern approach (recommended)
-    from tappers_service.tapper_system.commands import dual_sequences
+    from tapper_system.tapper_service.commands import dual_sequences
     dual_sequences.tap_card2_timed(protocol)
     
     # Legacy approach (for backward compatibility)
-    from tappers_service.tapper_system.commands import legacy_sequences
+    from tapper_system.tapper_service.commands import legacy_sequences
     legacy_sequences.simple_tap(protocol)  # Original function names preserved
 """
 

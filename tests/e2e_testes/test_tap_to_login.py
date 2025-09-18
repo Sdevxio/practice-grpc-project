@@ -4,10 +4,11 @@ import time
 
 import pytest
 
-from test_framework.utils.handlers.artifacts.artifacts_handler import save_to_artifacts
+from test_framework.utils.handlers.execution_artifacts.artifacts_handler import save_to_artifacts
+
 
 # @pytest.mark.test_user("macos_lab_1")
-@pytest.mark.auto_manage(False)
+@pytest.mark.auto_login(False)
 def test_complete_tap_to_login(login_state, session_manager, parse_log_file, prepare_log_file, test_config, test_logger):
     """
     Complete tap to login test - combines all verification steps using new framework

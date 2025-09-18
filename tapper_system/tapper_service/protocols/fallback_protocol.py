@@ -1,7 +1,7 @@
 from typing import List, Optional, Dict, Any
 
-from tappers_service.tapper_system.protocols.base_protocol import BaseProtocol
-from tappers_service.tapper_system.utils import TapperProtocolError
+from tapper_system.tapper_service.protocols.base_protocol import BaseProtocol
+from tapper_system.tapper_service.utils.exceptions import TapperProtocolError
 
 
 class FallbackTapperProtocol(BaseProtocol):
@@ -13,7 +13,7 @@ class FallbackTapperProtocol(BaseProtocol):
     Caches the working protocol to avoid repeated connection attempts on later commands.
 
     This enables resilient communication by providing multiple transport options
-    (e.g., HTTP → MQTT fallback) without requiring changes to client code.
+    (e.g., HTTP â†’ MQTT fallback) without requiring changes to client code.
 
     Example:
         protocols = [HTTPTapperProtocol(...), MQTTTapperProtocol(...)]
@@ -100,10 +100,10 @@ class FallbackTapperProtocol(BaseProtocol):
 
     def send_command(self, command: str, params: Optional[Dict[str, Any]] = None) -> Any:
         """
-        Send a commands using the cached working protocol with automatic fallback.
+        Send a command using the cached working protocol with automatic fallback.
 
         :param command: Command name (e.g., "tap", "extend", "retract").
-        :param params: Optional commands parameters.
+        :param params: Optional command parameters.
         :return Any: Response from the successful protocol.
         :raise TapperProtocolError: If all protocols in the chain fail.
         """
@@ -139,7 +139,7 @@ class FallbackTapperProtocol(BaseProtocol):
 
         # All protocols failed
         raise TapperProtocolError(
-            f"No working protocols available for commands '{command}'",
+            f"No working protocols available for command '{command}'",
             command=command,
             device_id=self.device_id,
             protocol="CachedFallback"

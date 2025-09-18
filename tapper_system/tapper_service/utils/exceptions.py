@@ -1,7 +1,3 @@
-"""
-Simple tapper exceptions.
-"""
-
 class TapperError(Exception):
     """Base class for all tapper-related errors."""
     def __init__(self, message: str, device_id: str = None):

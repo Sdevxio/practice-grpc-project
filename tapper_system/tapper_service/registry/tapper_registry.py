@@ -8,17 +8,17 @@ Updated TapperRegistry to use singleton pattern
 
 from typing import Dict
 
-from tappers_service.tapper_system.protocols.fallback_protocol import FallbackTapperProtocol
-from tappers_service.tapper_system.protocols.http_protocol import HTTPTapperProtocol
-from tappers_service.tapper_system.protocols.mqtt_protocol import MQTTTapperProtocol
+from tapper_system.tapper_service.protocols.fallback_protocol import FallbackTapperProtocol
+from tapper_system.tapper_service.protocols.http_protocol import HTTPTapperProtocol
+from tapper_system.tapper_service.protocols.mqtt_protocol import MQTTTapperProtocol
 from test_framework.utils import get_logger
-from test_framework.utils.loaders.config_manager import ConfigurationManager
+from test_framework.utils.loaders.config_manager import ConfigManager
 
 
 class TapperRegistry:
     """
     Registry to manage and cache tapper instances per test station.
-    Uses singleton ConfigurationManager to prevent duplicate loading.
+    Uses singleton ConfigManager to prevent duplicate loading.
     """
 
     def __init__(self):
@@ -26,12 +26,12 @@ class TapperRegistry:
         self.logger = get_logger(f"TapperRegistry")
 
         # Use singleton ConfigurationManager
-        self.config_manager = ConfigurationManager.get_instance()
+        self.config_manager = ConfigManager.get_instance()
 
     def get_tapper(self, station_id: str) -> FallbackTapperProtocol:
         """
         Return a tapper instance for the given station using fallback strategy.
-        Uses singleton ConfigurationManager to avoid duplicate config loading.
+        Uses singleton ConfigManager to avoid duplicate config loading.
         """
         if station_id in self._tapper_cache:
             self.logger.debug(f"Using cached tapper for station: {station_id}")

@@ -13,7 +13,7 @@ tapper_devices:
   tapper_125C:
     description: "Primary tapper for station 1"
     device_id: "tapper_125C"
-    http_url: "http://10.0.0.149"
+    http_url: "http://10.0.0.230"
     status: "active"
     # Dual card capabilities
     supports_dual_cards: true

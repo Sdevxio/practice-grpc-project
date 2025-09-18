@@ -15,9 +15,9 @@ Main Components:
     Registry: Device and station management (registry/)
 
 Example Usage:
-    from tappers_service.tapper_system import TapperService
-    from tappers_service.tapper_system.commands import dual_sequences
-    from tappers_service.tapper_system.commands import legacy_sequences  # For backward compatibility
+    from tapper_system.tapper_service import TapperService
+    from tapper_system.tapper_service.commands import dual_sequences
+    from tapper_system.tapper_service.commands import legacy_sequences  # For backward compatibility
     
     # Create service with dual protocol support
     service = TapperService("station1")
@@ -47,7 +47,7 @@ __all__ = [
     'HTTPTapperProtocol', 
     'MQTTTapperProtocol',
     'TapperRegistry',
-    'command'
+    'commands'
 ]
 
 __version__ = '2.0.0'

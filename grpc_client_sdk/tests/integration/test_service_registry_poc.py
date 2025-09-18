@@ -16,8 +16,8 @@ class TestServiceRegistryBasics:
         """
         Simple commands execution - the most common test pattern.
         
-        OLD approach required: command_service, setup, understanding fixture chains
-        NEW approach: just ask for 'commands' fixture
+        OLD approach required: command_service, setup, understanding fixtures chains
+        NEW approach: just ask for 'commands' fixtures
         """
         result = command("whoami")
         assert result.exit_code == 0
@@ -27,7 +27,7 @@ class TestServiceRegistryBasics:
         """
         Smart commands that can handle both user and root contexts.
         
-        This demonstrates the 'smart' aspect - the same fixture can handle
+        This demonstrates the 'smart' aspect - the same fixtures can handle
         different contexts based on parameters.
         """
         # User context (default)
@@ -173,7 +173,7 @@ class TestBackwardCompatibility:
 
     def test_legacy_setup_fixture_still_works(self, setup):
         """
-        Verify that existing tests using 'setup' fixture still work.
+        Verify that existing tests using 'setup' fixtures still work.
         
         This ensures zero-disruption migration.
         """
@@ -183,9 +183,9 @@ class TestBackwardCompatibility:
 
     def test_safe_commands_utility(self, command, safe_commands):
         """
-        Test the safe commands utility fixture.
+        Test the safe commands utility fixtures.
         
-        This replaces the old sample_commands fixture with a simpler approach.
+        This replaces the old sample_commands fixtures with a simpler approach.
         """
         # Test basic commands
         for cmd_name, cmd in safe_commands['basic'].items():
@@ -286,7 +286,7 @@ def test_migration_comparison():
         result = command_service.run_command(f"test -f {temp_file}")
         assert result.exit_code == 0
         
-        # Need separate fixture for user services
+        # Need separate fixtures for user services
         screenshot = user_services.screen_capture.capture_screenshot()
         assert screenshot["success"]
         

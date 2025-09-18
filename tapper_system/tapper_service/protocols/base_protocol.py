@@ -42,10 +42,10 @@ class BaseProtocol(ABC):
     @abstractmethod
     def send_command(self, command: str, params: Optional[Dict[str, Any]] = None) -> Any:
         """
-        Send a commands to the tapper.
+        Send a command to the tapper.
 
         :param command: Action name (e.g., "tap", "extend").
-        :param params: Optional parameters for the commands (e.g., speed, duration).
+        :param params: Optional parameters for the command (e.g., speed, duration).
         :return Any: Protocol-specific response.
         """
         pass

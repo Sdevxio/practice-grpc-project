@@ -53,7 +53,7 @@ def test_get_logged_in_users(setup):
     command_client.connect()
 
     # Get logged-in users
-    username = "macos_lab_1"
+    username = "admin"
     result = command_client.get_logged_in_users()
     print(f"Logged-in users: {result}")
 

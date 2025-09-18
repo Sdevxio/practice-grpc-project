@@ -71,14 +71,14 @@ class DynamicLogSimulator:
 
         # Event probability weights (higher = more frequent)
         self.event_weights = {
-            EventType.SYSTEM_MONITOR: 0.2,
-            EventType.CARD_DETECTION: 0.15,
-            EventType.USER_AUTH: 0.15,
+            EventType.SYSTEM_MONITOR: 0.15,
+            EventType.CARD_DETECTION: 0.25,  # Increased for test reliability
+            EventType.USER_AUTH: 0.25,       # Increased for test reliability
             EventType.SESSION_CREATE: 0.1,
-            EventType.UI_SWITCH: 0.25,  # Much higher chance for UI events
-            EventType.NETWORK_EVENT: 0.05,
-            EventType.PERFORMANCE_CHECK: 0.05,
-            EventType.ERROR_EVENT: 0.05,
+            EventType.UI_SWITCH: 0.15,
+            EventType.NETWORK_EVENT: 0.03,
+            EventType.PERFORMANCE_CHECK: 0.03,
+            EventType.ERROR_EVENT: 0.04,
         }
 
     def _init_log_templates(self) -> Dict[EventType, List[LogTemplate]]:

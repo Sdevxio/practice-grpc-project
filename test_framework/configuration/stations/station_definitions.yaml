@@ -50,11 +50,11 @@ stations:
 station_overrides:
   station1:
     timeouts:
-      session_timeout: 45
+      session_timeout: 10
   station2:
     protocols:
       http:
-        timeout: 15
+        timeout: 10
   station3:
     timeouts:
-      session_timeout: 90
+      session_timeout: 10

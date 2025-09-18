@@ -3,7 +3,7 @@ import pytest
 from test_framework.utils.handlers.dashboard_handler.dashboard_manager import PerformanceDashboardManager
 
 
-@pytest.mark.test_user("macos_lab_2")
+@pytest.mark.test_user("admin")
 def test_login_ui_performance(login_state, session_manager, parse_log_file, test_config, test_logger, prepare_log_file):
     """
     Test to measure the performance of the login UI process.
@@ -24,10 +24,10 @@ def test_login_ui_performance(login_state, session_manager, parse_log_file, test
         db_path=r"C:\performance-data\performance.db"
     )
 
-    # Get tap timestamp from the login state fixture
+    # Get tap timestamp from the login state fixtures
     tap_timestamp = login_state.get_last_tap_timestamp()
     test_logger.info(f"Login tap timestamp: {tap_timestamp}")
-    assert tap_timestamp is not None, "Tap timestamp should be available from login_state fixture"
+    assert tap_timestamp is not None, "Tap timestamp should be available from login_state fixtures"
 
     # Initialize session manager and context
     manager, session_context = session_manager

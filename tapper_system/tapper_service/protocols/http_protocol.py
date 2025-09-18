@@ -2,8 +2,8 @@ from typing import Optional, Dict, Any
 
 import requests
 
-from tappers_service.tapper_system.protocols.base_protocol import BaseProtocol
-from tappers_service.tapper_system.utils import (
+from tapper_system.tapper_service.protocols.base_protocol import BaseProtocol
+from tapper_system.tapper_service.utils.exceptions import (
     TapperConnectionError,
     TapperTimeoutError,
     TapperProtocolError
@@ -16,7 +16,7 @@ class HTTPTapperProtocol(BaseProtocol):
 
     Communicates with ESP32 tapper devices via REST API.
     Supports:
-      - Stateless commands execution (GET or POST)
+      - Stateless command execution (GET or POST)
       - Status polling (/status)
       - Optional health checks (/ping)
 
@@ -51,7 +51,7 @@ class HTTPTapperProtocol(BaseProtocol):
 
     def send_command(self, command: str, params: Optional[Dict[str, Any]] = None) -> Any:
         """
-        Send commands via GET or POST.
+        Send command via GET or POST.
 
         :param command: Action to execute (e.g., 'tap').
         :param params: Optional parameters (used with POST).
@@ -61,8 +61,8 @@ class HTTPTapperProtocol(BaseProtocol):
             if params:
                 payload = {"action": command}
                 payload.update(params)
-                self.logger.debug(f"Sending POST to /commands with: {payload}")  # Changed from INFO to DEBUG
-                response = requests.post(f"{self.base_url}/commands", json=payload, timeout=self.timeout)
+                self.logger.debug(f"Sending POST to /command with: {payload}")  # Changed from INFO to DEBUG
+                response = requests.post(f"{self.base_url}/command", json=payload, timeout=self.timeout)
             else:
                 self.logger.debug(f"Sending GET to /{command}")  # Changed from INFO to DEBUG
                 response = requests.get(f"{self.base_url}/{command}", timeout=self.timeout)
@@ -99,7 +99,7 @@ class HTTPTapperProtocol(BaseProtocol):
                 error_type = "Connection error"
 
             raise TapperConnectionError(
-                f"Cannot connect to send commands '{command}': {error_type}",
+                f"Cannot connect to send command '{command}': {error_type}",
                 device_id=self.device_id,
                 protocol="HTTP",
                 connection_details={"base_url": self.base_url, "error": str(e)}
@@ -107,7 +107,7 @@ class HTTPTapperProtocol(BaseProtocol):
 
         except requests.exceptions.HTTPError as e:
             raise TapperProtocolError(
-                f"HTTP error for commands '{command}': {e.response.status_code} {e.response.reason}",
+                f"HTTP error for command '{command}': {e.response.status_code} {e.response.reason}",
                 command=command,
                 response=f"{e.response.status_code} {e.response.reason}",
                 device_id=self.device_id,
@@ -115,9 +115,9 @@ class HTTPTapperProtocol(BaseProtocol):
             ) from e
 
         except Exception as e:
-            self.logger.error(f"HTTP error sending commands '{command}': {e}")
+            self.logger.error(f"HTTP error sending command '{command}': {e}")
             raise TapperProtocolError(
-                f"Unexpected error sending commands '{command}'",
+                f"Unexpected error sending command '{command}'",
                 command=command,
                 device_id=self.device_id,
                 protocol="HTTP"
@@ -166,45 +166,43 @@ class HTTPTapperProtocol(BaseProtocol):
 
     def extend_for_time(self, duration_ms: int) -> Any:
         """
-        Override for direct HTTP POST to timed operation endpoint.
-        
-        :param duration_ms: Duration in milliseconds
-        :return: Response text or raises exception
+        Extend the tapper for a specified duration.
+
+        :param duration_ms: Duration in milliseconds to extend.
         """
         try:
-            self.logger.debug(f"Extending for {duration_ms}ms via direct endpoint")
+            self.logger.debug(f"Extending tapper for {duration_ms}ms via /extend_for_time endpoint")
             response = requests.post(f"{self.base_url}/extend_for_time?duration={duration_ms}", timeout=self.timeout)
             response.raise_for_status()
             return response.text.strip()
         except Exception as e:
             self.logger.error(f"Failed to extend for time: {e}")
             raise TapperProtocolError(
-                f"Extend for time operation failed",
-                command="extend_for_time", 
+                f"Extend for operation failed",
+                command="extend_for_time",
                 device_id=self.device_id,
                 protocol="HTTP"
-            ) from e
-    
+            )from e
+
     def retract_for_time(self, duration_ms: int) -> Any:
         """
-        Override for direct HTTP POST to timed operation endpoint.
-        
-        :param duration_ms: Duration in milliseconds
-        :return: Response text or raises exception
+        Retract the tapper for a specified duration.
+
+        :param duration_ms: Duration in milliseconds to retract.
         """
         try:
-            self.logger.debug(f"Retracting for {duration_ms}ms via direct endpoint")
+            self.logger.debug(f"Retracting tapper for {duration_ms}ms via /retract_for_time endpoint")
             response = requests.post(f"{self.base_url}/retract_for_time?duration={duration_ms}", timeout=self.timeout)
             response.raise_for_status()
             return response.text.strip()
         except Exception as e:
             self.logger.error(f"Failed to retract for time: {e}")
             raise TapperProtocolError(
-                f"Retract for time operation failed",
+                f"Retract for operation failed",
                 command="retract_for_time",
                 device_id=self.device_id,
                 protocol="HTTP"
-            ) from e
+            )from e
 
     def __repr__(self) -> str:
         return f"<HTTPTapperProtocol[{self.device_id}] url={self.base_url}>"

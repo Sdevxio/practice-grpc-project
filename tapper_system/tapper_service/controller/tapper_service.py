@@ -1,8 +1,8 @@
 from typing import Optional
 
-from tappers_service.tapper_system.protocols.base_protocol import BaseProtocol
-from tappers_service.tapper_system.registry.tapper_registry import TapperRegistry
-from tappers_service.tapper_system.utils import TapperError
+from tapper_system.tapper_service.registry.tapper_registry import TapperRegistry
+from tapper_system.tapper_service.protocols.base_protocol import BaseProtocol
+from tapper_system.tapper_service.utils import TapperError
 from test_framework.utils import get_logger
 
 

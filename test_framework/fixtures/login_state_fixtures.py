@@ -9,7 +9,7 @@ from test_framework.utils import get_logger
 @pytest.fixture
 def login_state(test_config, request):
     """
-    Login state fixture with single responsibility: login/logout management.
+    Login state fixtures with single responsibility: login/logout management.
 
     Usage:
     @pytest.mark.auto_manage(True)  # or False to disable auto-management
@@ -27,7 +27,7 @@ def login_state(test_config, request):
     login_manager = LoginManager(station_id=station_id, logger=logger, user_tap_mapping=user_tap_mapping)
 
     # Check if auto-management is enabled
-    marker = request.node.get_closest_marker("auto_manage")
+    marker = request.node.get_closest_marker("auto_login")
     if marker and marker.args:
         auto_manage = marker.args[0]
     else:

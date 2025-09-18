@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from test_framework.utils.consts.constants import IMPRIVATA_LOG_PATH
+from test_framework.utils.consts.constants import REMOTE_LOG_PATH
 from test_framework.utils.loaders.station_loader import StationLoader
 
 
@@ -54,7 +54,7 @@ def test_config(request):
         "expected_card": expected_card,
         "session_timeout": session_timeout,
         "station_config": station_config,
-        "log_file_path": IMPRIVATA_LOG_PATH,
+        "log_file_path": REMOTE_LOG_PATH,
         "test_users": test_users,
         "test_cards": test_cards,
         "e2e_defaults": e2e_defaults,

@@ -4,8 +4,8 @@ from typing import Optional, Dict, Any
 
 import paho.mqtt.client as mqtt
 
-from tappers_service.tapper_system.protocols.base_protocol import BaseProtocol
-from tappers_service.tapper_system.utils import TapperConnectionError, TapperProtocolError
+from tapper_system.tapper_service.protocols.base_protocol import BaseProtocol
+from tapper_system.tapper_service.utils.exceptions import TapperConnectionError, TapperProtocolError
 
 
 class MQTTTapperProtocol(BaseProtocol):
@@ -19,7 +19,7 @@ class MQTTTapperProtocol(BaseProtocol):
       - Graceful reconnect/disconnect
 
     Topics:
-      - tappers/<device_id>/commands
+      - tappers/<device_id>/command
       - tappers/<device_id>/status
     """
 
@@ -36,10 +36,10 @@ class MQTTTapperProtocol(BaseProtocol):
         self.timeout = config.get("timeout", 2)
 
         self.topic_prefix = f"tappers/{self.device_id}"
-        self.command_topic = f"{self.topic_prefix}/commands"
+        self.command_topic = f"{self.topic_prefix}/command"
         self.status_topic = f"{self.topic_prefix}/status"
 
-        self._client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
+        self._client = mqtt.Client()
         self._status = "unknown"
         self._lock = threading.Lock()
         self._connected = False
@@ -72,7 +72,7 @@ class MQTTTapperProtocol(BaseProtocol):
                 }
             ) from e
 
-    def _on_message(self, msg):
+    def _on_message(self, client, userdata, msg):
         """Handle status messages received via subscription."""
         try:
             payload = msg.payload.decode()
@@ -84,10 +84,10 @@ class MQTTTapperProtocol(BaseProtocol):
 
     def send_command(self, command: str, params: Optional[Dict[str, Any]] = None) -> bool:
         """
-        Publish a commands to the tapper.
+        Publish a command to the tapper.
 
         :param command: Command name (e.g., 'tap', 'extend').
-        :param params: Optional parameters for the commands.
+        :param params: Optional parameters for the command.
         :return bool: True if publish succeeded.
         """
         if not self._connected:
@@ -109,7 +109,7 @@ class MQTTTapperProtocol(BaseProtocol):
 
         except TypeError as e:
             raise TapperProtocolError(
-                f"Failed to encode commands '{command}' as JSON",
+                f"Failed to encode command '{command}' as JSON",
                 command=command,
                 device_id=self.device_id,
                 protocol="MQTT"
@@ -118,7 +118,7 @@ class MQTTTapperProtocol(BaseProtocol):
         except Exception as e:
             self.logger.error(f"MQTT send_command failed: {e}")
             raise TapperProtocolError(
-                f"Failed to send commands '{command}'",
+                f"Failed to send command '{command}'",
                 command=command,
                 device_id=self.device_id,
                 protocol="MQTT"

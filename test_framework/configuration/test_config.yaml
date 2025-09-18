@@ -1,22 +1,29 @@
 # Test users
 users:
-  test_user:
-    username: "admin"
-    full_name: "admin admin"
-    user_type: "admin"
-    description: "Primary test user for E2E Validation"
-
-  test_user2:
+  test_user_1:
     username: "admin"
     full_name: "admin"
-    user_type: "admin"
-    description: "Administrator test user for E2E Validation"
+    user_type: "administrator"
+    description: "Primary test user for E2E Validation"
+    tap_endpoint: "tap_card1_endpoint"
+    default_card: "card_1234567890"
 
-  test_user3:
-    username: "alaeddinekramou"
-    full_name: "alaeddinekramou"
-    user_type: "admin"
+  test_user_2:
+    username: "macos_lab_1"
+    full_name: "macos_lab_1"
+    user_type: "standard"
+    description: "Administrator test user for E2E Validation"
+    tap_endpoint: "tap_card2_endpoint"
+    default_card: "card_0987654321"
+
+
+  test_user_3:
+    username: "macos_lab_2"
+    full_name: "macos_lab_2"
+    user_type: "standard"
     description: "Administrator user for E2E Validation"
+    tap_endpoint: "tap_card3_endpoint"
+    default_card: "card_1122334455"
 
 # Test cards
 cards:
@@ -84,9 +91,22 @@ test_suites:
 
   # E2E test defaults
   e2e_test_defaults:
-      session_timeout: 60
+      session_timeout: 10
       tap_timeout: 10
-      log_retrieval_timeout: 30
+      log_retrieval_timeout: 10
       log_file_path: "/Users/admin/PA/dynamic_log_generator/dynamic_test.log"
       log_tail_size: "2097152" # 2MB
+
+
+  user_card_mapping:
+    test_user_1: "card_1234567890"
+    test_user_2: "card_0987654321"
+    test_user_3: "card_1122334455"
+
+  hardware_defaults:
+    enabled_protocols: true
+    login_max_attempts: 3
+    logoff_max_attempts: 3
+    verification_timeout: 10
+    retry_delay: 2.0
 
