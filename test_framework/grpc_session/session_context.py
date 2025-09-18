@@ -24,7 +24,7 @@ class SessionContext:
             user_context=user_service_context
         )
         print(session.username)  # Output: test_user
-        print(session.root_context.command.run("ls -la"))
+        print(session.root_context.commands.run("ls -la"))
     """
 
     def __init__(self, username: str, agent_port: int, root_context: ServiceContext, user_context: ServiceContext):

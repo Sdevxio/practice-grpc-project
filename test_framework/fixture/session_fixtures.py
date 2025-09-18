@@ -1,20 +1,26 @@
-
 import pytest
 from test_framework.grpc_session.session_manager import GrpcSessionManager
 from test_framework.utils import get_logger
+import time
+
 
 @pytest.fixture(scope="function")
-def session_manager(test_config, request, test_logger):
-    """Single source of truth for gRPC session management."""
+def session_manager(test_config, request):
+    """
+    Session manager fixture that provides a GrpcSessionManager and SessionContext.
+
+    This fixture assumes login has already happened via the login_state fixture.
+    It only handles gRPC session creation and management.
+    """
     test_name = request.node.name
     correlation_id = getattr(request.node, 'correlation_id', None)
-    
+
     logger = get_logger(f"test.{test_name}.session")
     if correlation_id:
         logger.info(f"Session manager using correlation ID: {correlation_id}")
-        
+
     expected_user = test_config.get("expected_user")
-    login_timeout = test_config.get("login_timeout", 30)
+    login_timeout = test_config.get("session_timeout", 15)
     manager = GrpcSessionManager(
         station_id=test_config["station_id"],
         logger=logger,
@@ -24,6 +30,10 @@ def session_manager(test_config, request, test_logger):
     session_context = None
 
     try:
+        # Wait for login to be fully processed before creating session
+        logger.info("Waiting for login to be fully processed before creating session...")
+        time.sleep(3.0)
+
         session_context = manager.create_session(
             expected_user=expected_user,
             timeout=login_timeout

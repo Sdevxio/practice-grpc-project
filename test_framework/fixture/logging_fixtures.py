@@ -1,9 +1,3 @@
-"""
-Logging fixtures for test framework.
-
-Provides centralized logging setup and test-specific loggers.
-"""
-
 import datetime
 import os
 import pytest
@@ -31,17 +25,15 @@ def test_logger(request, setup_logging):
     test_name = request.node.name
     set_test_case(test_name)
     logger = get_logger(f"test.{test_name}")
-    
+
     # Generate unique correlation ID per test execution
     import uuid
     correlation_id = f"{RUN_ID[:8]}-{str(uuid.uuid4())[:8]}"
     setup_logging.set_correlation_id(correlation_id)
-    
+
     # Store correlation ID on request node for other fixtures to access
     request.node.correlation_id = correlation_id
-    
-    logger.info(f"{'=' * 30} START SESSION SETUP")
-    logger.info(f"Test correlation ID: {correlation_id}")
+    logger.debug(f"Test correlation ID: {correlation_id}")
 
     yield logger
 

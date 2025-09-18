@@ -1,8 +1,8 @@
 import logging
 from statistics import correlation
 
-from test_framework.utils.logger_settings.logger_config import LoggerConfig
 from test_framework.utils.logger_settings.logger_failed_test import LoggerFailedTestHandler
+from test_framework.utils.logger_settings.logger_config import LoggerConfig
 from test_framework.utils.logger_settings.logger_filter import EnhancedContextFilter
 from test_framework.utils.logger_settings.logger_rotating_file import ArchivingRotatingFileHandler
 
@@ -14,9 +14,9 @@ class LoggerManager:
 
     Attributes:
         _instance (LoggerManager): Singleton instance of LoggerManager.
-        config (LogConfig): Configuration for logging.
+        config (LoggerConfig): Configuration for logging.
         context_filter (EnhancedContextFilter): Filter to add enhanced context to log records.
-        failed_test_handler (FailedTestLogHandler): Handler for failed test logs.
+        failed_test_handler (LoggerFailedTestHandler): Handler for failed test logs.
     """
     _instance = None
 
@@ -87,7 +87,7 @@ class LoggerManager:
                     if not any(isinstance(f, EnhancedContextFilter) for f in logger_obj.filters):
                         logger_obj.addFilter(self.context_filter)
             except Exception:
-                pass  # Ignore errors for problematic loggers
+                pass
 
         # Apply to all existing loggers
         for name, logger in logging.root.manager.loggerDict.items():

@@ -12,7 +12,6 @@ from test_framework.grpc_session.context_builder import SessionContextBuilder
 from test_framework.grpc_session.session_context import SessionContext
 from test_framework.utils import get_logger
 from test_framework.utils.loaders.station_loader import StationLoader
-from test_framework.utils.logger_settings.performance_timing import time_session_operation
 
 
 class GrpcSessionManager:
@@ -24,19 +23,19 @@ class GrpcSessionManager:
     - Wait for expected user to log in
     - Discover the agent's gRPC port via RegistryService
     - Construct and return a fully connected SessionContext
-    - Provide logged-in user information via command service
+    - Provide logged-in user information via commands service
     """
 
     def __init__(self, station_id: str, logger: Optional[logging.Logger] = None, test_context: str = None):
         self.station_id = station_id
         self.test_context = test_context
-        
+
         # Create correlated logger name based on context
         if test_context:
             logger_name = f"test.{test_context}.session.{station_id}"
         else:
             logger_name = f"session.{station_id}.manager"
-            
+
         self.logger = logger or get_logger(logger_name)
         self.root_target = StationLoader().get_grpc_target(station_id)
         GrpcClientManager.register_clients(name="root", target=self.root_target)
@@ -44,7 +43,7 @@ class GrpcSessionManager:
         self.root_command = CommandServiceClient(client_name="root", logger=self.logger)
         self._session_context: Optional[SessionContext] = None
 
-    def create_session(self, expected_user: str, timeout: int = 30) -> SessionContext:
+    def create_session(self, expected_user: str, timeout: int = None) -> SessionContext:
         """
         Create a gRPC session for the expected user.
 
@@ -54,7 +53,7 @@ class GrpcSessionManager:
         """
         self.logger.info(f"Creating gRPC session for user '{expected_user}'")
 
-        # Step 1: Connect to root registry and command service
+        # Step 1: Connect to root registry and commands service
         self._connect_to_root_services()
 
         # Step 2: Wait for user login
@@ -69,7 +68,7 @@ class GrpcSessionManager:
 
     def get_logged_in_users(self) -> Dict[str, Any]:
         """
-        Get current logged-in users via root context command service.
+        Get current logged-in users via root context commands service.
 
         This is the correct way to get actual console user and logged-in users.
         """
@@ -79,7 +78,7 @@ class GrpcSessionManager:
                 result = self._session_context.root_context.command.get_logged_in_users()
                 return result
             else:
-                # Fallback to direct command service
+                # Fallback to direct commands service
                 if not self.root_command.stub:
                     self.root_command.connect()
                 result = self.root_command.get_logged_in_users()
@@ -90,7 +89,7 @@ class GrpcSessionManager:
             return {"console_user": "", "logged_in_users": []}
 
     def _connect_to_root_services(self):
-        """Connect to the root registry and command service."""
+        """Connect to the root registry and commands service."""
         self.logger.info("Connecting to root services...")
         self.root_registry.connect()
         self.root_command.connect()

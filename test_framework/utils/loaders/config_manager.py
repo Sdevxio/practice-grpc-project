@@ -1,17 +1,10 @@
-# ==================================================
-# 1. UPDATE: configuration_manager.py
-# ==================================================
-
 """
-Updated Configuration Manager with Singleton Pattern
-
-This eliminates duplicate instantiations and reduces logging noise.
+Configuration Manager for Test Framework, handling station, endpoint, tapper, and test configurations.
 """
-
 import threading
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Optional, Dict, Any, List
 
 from test_framework.utils import get_logger
 from test_framework.utils.loaders.yaml_loader import YamlLoader
@@ -19,7 +12,7 @@ from test_framework.utils.loaders.yaml_loader import YamlLoader
 
 @dataclass
 class StationConfig:
-    """Complete station configuration with all resolved references."""
+    """Dataclass to hold station configuration details."""
     station_id: str
     name: str
     description: str
@@ -32,36 +25,53 @@ class StationConfig:
     status: str
 
 
-class ConfigurationManager:
-    """
-    Singleton Configuration Manager to prevent duplicate loading.
+def _apply_protocol_overrides(protocol_configs: Dict[str, Any], overrides: Dict[str, Any]) -> Dict[
+    str, Any]:
+    """Apply protocol-specific overrides to the protocol configurations."""
+    if not overrides:
+        return protocol_configs
 
-    Uses thread-safe singleton pattern to ensure only one instance
-    exists across the entire application lifecycle.
-    """
+    # Apply protocol-specific overrides
+    protocol_overrides = overrides.get("protocols", {})
+    for protocol, override_config in protocol_overrides.items():
+        if protocol in protocol_configs:
+            # Deep merge override config
+            protocol_configs[protocol] = {**protocol_configs[protocol], **override_config}
 
+    return protocol_configs
+
+
+class ConfigManager:
+    """
+    Singleton configuration manager for loading and caching test framework configurations.
+    Handles station, endpoint, tapper, and test configurations.
+    """
     _instance = None
     _lock = threading.Lock()
     _initialized = False
 
     def __new__(cls, config_root: Optional[str] = None):
-        """Thread-safe singleton implementation."""
+        """Singleton implementation."""
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
-                    cls._instance = super(ConfigurationManager, cls).__new__(cls)
+                    cls._instance = super(ConfigManager, cls).__new__(cls)
         return cls._instance
 
     def __init__(self, config_root: Optional[str] = None):
-        """Initialize only once, subsequent calls are ignored."""
-        if ConfigurationManager._initialized:
+        """Initialize configuration manager with optional config root path.
+
+        :arg config_root: Root directory for configuration files. If None, auto-detects.
+        """
+
+        if ConfigManager._initialized:
             return
 
-        with ConfigurationManager._lock:
-            if ConfigurationManager._initialized:
+        with ConfigManager._lock:
+            if ConfigManager._initialized:
                 return
 
-            self.logger = get_logger("framework.loader.config_manager")
+            self.logger = get_logger("ConfigManager")
 
             # Auto-detect config root if not provided (only log once)
             if config_root is None:
@@ -76,10 +86,10 @@ class ConfigurationManager:
             self._loaders = {}
             self._initialize_loaders()
 
-            ConfigurationManager._initialized = True
+            ConfigManager._initialized = True
 
     def _auto_detect_config_root(self) -> Path:
-        """Auto-detect config root (only called once)."""
+        """Auto-detect the configuration root directory."""
         current_file = Path(__file__).resolve()
 
         # Try to find test_framework directory
@@ -90,7 +100,7 @@ class ConfigurationManager:
             if potential_config.exists():
                 return potential_config
 
-        # Fallback: look for configs directory in current working directory
+        # Fallback: look for configuration directory in current working directory
         cwd = Path.cwd()
         potential_configs = [
             cwd / "test_framework" / "configuration",
@@ -106,12 +116,12 @@ class ConfigurationManager:
         return fallback
 
     def _initialize_loaders(self):
-        """Initialize YAML loaders for each configuration file."""
+        """Initialize YAML loaders for all configuration files."""
         config_files = {
             "endpoints": self.config_root / "infrastructure" / "macos_endpoints.yaml",
             "tappers": self.config_root / "infrastructure" / "tapper_devices.yaml",
             "stations": self.config_root / "stations" / "station_definitions.yaml",
-            "test_config": self.config_root / "test_config.yaml",
+            "test_config.yaml": self.config_root / "test_config.yaml",
         }
 
         for config_name, config_path in config_files.items():
@@ -122,10 +132,8 @@ class ConfigurationManager:
                 self.logger.warning(f"Config file not found: {config_path}")
 
     def get_station_config(self, station_id: str) -> StationConfig:
-        """
-        Get complete station configuration with caching.
-        Only logs station config building on cache miss.
-        """
+        """Get complete station configuration with defaults and overrides applied."""
+
         # Check cache first
         cache_key = f"station_{station_id}"
         if cache_key in self._config_cache:
@@ -150,7 +158,7 @@ class ConfigurationManager:
         enabled_protocols = station_def.get("enabled_protocols", [])
         protocol_configs = self._build_protocol_configs(enabled_protocols, endpoint_config, tapper_config)
         overrides = self._get_station_overrides(station_id)
-        protocol_configs = self._apply_protocol_overrides(protocol_configs, overrides)
+        protocol_configs = _apply_protocol_overrides(protocol_configs, overrides)
 
         station_config = StationConfig(
             station_id=station_id,
@@ -165,7 +173,6 @@ class ConfigurationManager:
             status=station_def.get("status", "active")
         )
 
-        # Cache the result
         self._config_cache[cache_key] = station_config
 
         # Only log on cache miss, not every access
@@ -179,11 +186,8 @@ class ConfigurationManager:
         This method provides the same structure as the old StationLoader
         to maintain compatibility with existing code.
 
-        Args:
-            station_id: ID of the station.
-
-        Returns:
-            Dict containing station config in legacy format.
+        :param station_id: ID of the station.
+        :return: Dict containing station config in legacy format.
         """
         station_config = self.get_station_config(station_id)
 
@@ -207,20 +211,20 @@ class ConfigurationManager:
 
     def get_test_config(self) -> Dict[str, Any]:
         """Get complete test configuration."""
-        if "test_config" not in self._loaders:
+        if "test_config.yaml" not in self._loaders:
             raise FileNotFoundError("Test configuration not found")
 
-        return self._loaders["test_config"].get_all()
+        return self._loaders["test_config.yaml"].get_all()
 
     def get_test_users(self) -> Dict[str, Any]:
         """Get all test user configurations."""
         test_config = self.get_test_config()
-        return test_config.get("users", {})  # Changed from "test_users" to "users"
+        return test_config.get("users", {})
 
     def get_test_cards(self) -> Dict[str, Any]:
         """Get all test card configurations."""
         test_config = self.get_test_config()
-        return test_config.get("cards", {})  # Changed from "test_cards" to "cards"
+        return test_config.get("cards", {})
 
     def get_station_groups(self) -> Dict[str, Any]:
         """Get station group configurations."""
@@ -235,9 +239,13 @@ class ConfigurationManager:
     def get_e2e_defaults(self) -> Dict[str, Any]:
         """Get E2E test default configurations."""
         test_config = self.get_test_config()
-        # Handle nested structure in your config
-        test_suites = test_config.get("test_suites", {})
-        return test_suites.get("e2e_test_defaults", {})
+        # e2e_test_defaults is a top-level section in test_config.yaml
+        return test_config.get("e2e_test_defaults", {})
+
+    def get_domain(self) -> Dict[str, Any]:
+        """Get domain configuration."""
+        test_config = self.get_test_config()
+        return test_config.get("domains", {})
 
     def get_environment_multipliers(self) -> Dict[str, Any]:
         """Get environment-specific timeout multipliers."""
@@ -248,11 +256,8 @@ class ConfigurationManager:
         """
         Get configuration for a specific test suite.
 
-        Args:
-            suite_name: Name of the test suite.
-
-        Returns:
-            Dict containing suite configuration.
+        :param suite_name: Name of the test suite.
+        :return: Configuration dictionary for the test suite.
         """
         test_suites = self.get_test_suites()
         if suite_name not in test_suites:
@@ -267,11 +272,8 @@ class ConfigurationManager:
 
         Handles both station_group and station_id configurations.
 
-        Args:
-            suite_name: Name of the test suite.
-
-        Returns:
-            List of station IDs for the suite.
+        :param suite_name: Name of the test suite.
+        :return: List of station IDs for the suite.
         """
         suite_config = self.get_test_suite_config(suite_name)
 
@@ -383,12 +385,12 @@ class ConfigurationManager:
         # Get defaults
         defaults = self._loaders["tappers"].get("defaults", {})
 
-        # Build protocol configs if not already present
+        # Build protocol configuration if not already present
         if "protocols" not in tapper_config:
             # Determine which protocols this tapper supports
             protocols = tapper_config.get("protocols", ["http", "mqtt"])  # Default to both
             if isinstance(protocols, list):
-                # Protocols specified as list, build configs
+                # Protocols specified as list, build configuration
                 tapper_config["protocols"] = {}
 
                 for protocol in protocols:
@@ -446,56 +448,11 @@ class ConfigurationManager:
         """Build protocol configurations for enabled protocols."""
         protocol_configs = {}
 
-        # Get the protocols from tapper config
-        tapper_protocols = tapper_config.get("protocols", {})
-
         for protocol in enabled_protocols:
-            if protocol == "http":
-                # Check if protocols is a dict and has http config
-                if isinstance(tapper_protocols, dict) and protocol in tapper_protocols:
-                    protocol_configs["http"] = tapper_protocols["http"].copy()
-                # Check if protocols is a list containing http, or if http_url exists
-                elif (isinstance(tapper_protocols,
-                                 list) and protocol in tapper_protocols) or "http_url" in tapper_config:
-                    # Build HTTP config from defaults and tapper_config
-                    defaults = self._loaders.get("tappers", {}).get("defaults", {})
-                    http_config = defaults.get("http", {}).copy()
-
-                    # Use http_url if available
-                    if "http_url" in tapper_config:
-                        http_config["base_url"] = tapper_config["http_url"]
-
-                    # Apply any http_override
-                    if "http_override" in tapper_config:
-                        http_config.update(tapper_config["http_override"])
-
-                    protocol_configs["http"] = http_config
-
-            elif protocol == "mqtt":
-                # Check if protocols is a dict and has mqtt config
-                if isinstance(tapper_protocols, dict) and protocol in tapper_protocols:
-                    protocol_configs["mqtt"] = tapper_protocols["mqtt"].copy()
-                # Check if protocols is a list containing mqtt
-                elif isinstance(tapper_protocols, list) and protocol in tapper_protocols:
-                    # Build MQTT config from defaults and device_id
-                    defaults = self._loaders.get("tappers", {}).get("defaults", {})
-                    mqtt_config = defaults.get("mqtt", {}).copy()
-
-                    # Generate MQTT topics using device_id
-                    if "device_id" in tapper_config:
-                        device_id = tapper_config["device_id"]
-                        mqtt_config.update({
-                            "command_topic": f"tappers/{device_id}/command",
-                            "status_topic": f"tappers/{device_id}/status",
-                            "device_id": device_id
-                        })
-
-                    # Apply any mqtt_override
-                    if "mqtt_override" in tapper_config:
-                        mqtt_config.update(tapper_config["mqtt_override"])
-
-                    protocol_configs["mqtt"] = mqtt_config
-
+            if protocol == "http" and protocol in tapper_config.get("protocols", {}):
+                protocol_configs["http"] = tapper_config["protocols"]["http"].copy()
+            elif protocol == "mqtt" and protocol in tapper_config.get("protocols", {}):
+                protocol_configs["mqtt"] = tapper_config["protocols"]["mqtt"].copy()
             elif protocol == "grpc":
                 protocol_configs["grpc"] = endpoint_config.get("grpc", {}).copy()
             else:
@@ -511,27 +468,11 @@ class ConfigurationManager:
         overrides = self._loaders["stations"].get("station_overrides", {})
         return overrides.get(station_id, {})
 
-    def _apply_protocol_overrides(self, protocol_configs: Dict[str, Any], overrides: Dict[str, Any]) -> Dict[str, Any]:
-        """Apply station-specific overrides to protocol configurations."""
-        if not overrides:
-            return protocol_configs
-
-        # Apply protocol-specific overrides
-        protocol_overrides = overrides.get("protocols", {})
-        for protocol, override_config in protocol_overrides.items():
-            if protocol in protocol_configs:
-                # Deep merge override config
-                protocol_configs[protocol] = {**protocol_configs[protocol], **override_config}
-
-        return protocol_configs
-
     def invalidate_cache(self, station_id: Optional[str] = None):
         """
         Invalidate configuration cache.
 
-        Args:
-            station_id: If provided, only invalidate cache for this station.
-                       If None, invalidate entire cache.
+        :arg station_id: If provided, only invalidate cache for this station. If None, invalidate entire cache
         """
         if station_id:
             cache_key = f"station_{station_id}"
@@ -556,7 +497,7 @@ class ConfigurationManager:
         self.logger.info("Configuration reload completed")
 
     @classmethod
-    def get_instance(cls) -> 'ConfigurationManager':
+    def get_instance(cls) -> 'ConfigManager':
         """Get the singleton instance."""
         if cls._instance is None:
             cls()
@@ -579,12 +520,11 @@ class LegacyStationLoader:
     ConfigurationManager internally.
     """
 
-    def __init__(self, config_name="stations"):
+    def __init__(self):
         """Initialize with legacy interface."""
-        self.logger = get_logger("framework.loader.legacy_station")
-        self.config_manager = ConfigurationManager()
+        self.logger = get_logger("LegacyStationLoader")
+        self.config_manager = ConfigManager()
 
-        # Log deprecation warning
         self.logger.warning(
             "LegacyStationLoader is deprecated. "
             "Please migrate to ConfigurationManager for new code."

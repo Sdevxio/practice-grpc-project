@@ -5,8 +5,8 @@ from grpc_client_sdk.services.apple_script_service_client import AppleScriptServ
 def test_run_applescript_service(setup):
     """
     Test the AppleScriptServiceClient gRPC client.
-    This test verifies the connection to the gRPC server and the execution of a simple AppleScript command.
-    It checks if the client is registered and connected, and if the AppleScript command executes successfully.
+    This test verifies the connection to the gRPC server and the execution of a simple AppleScript commands.
+    It checks if the client is registered and connected, and if the AppleScript commands executes successfully.
 
     :param setup: Fixture that sets up the gRPC server and client.
     """
@@ -27,8 +27,8 @@ def test_run_applescript_service(setup):
 def test_stream_applescript_service(setup):
     """
     Test the AppleScriptServiceClient gRPC client with streaming.
-    This test verifies the connection to the gRPC server and the execution of a simple AppleScript command.
-    It checks if the client is registered and connected, and if the AppleScript command executes successfully.
+    This test verifies the connection to the gRPC server and the execution of a simple AppleScript commands.
+    It checks if the client is registered and connected, and if the AppleScript commands executes successfully.
 
     :param setup: Fixture that sets up the gRPC server and client.
     """

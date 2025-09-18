@@ -1,7 +1,3 @@
-"""
-Updated CommandServiceClient with StreamCommand implementation.
-"""
-
 from typing import Optional, Generator, Dict, Any
 
 from generated import commands_service_pb2
@@ -15,7 +11,7 @@ from test_framework.utils import get_logger
 class CommandServiceClient:
     """
     CommandServiceClient is a gRPC client for executing shell commands and retrieving logged-in user information on macOS endpoint.
-    It provides methods to run commands synchronously, stream command output in real-time, and fetch the list of users currently logged in.
+    It provides methods to run commands synchronously, stream commands output in real-time, and fetch the list of users currently logged in.
 
     Supported operations:
     - run_command: Executes shell commands and returns the exit code, stdout, and stderr.
@@ -53,7 +49,7 @@ class CommandServiceClient:
         :param logger: Custom logger instance. If None, a default logger is created.
         """
         self.client_name = client_name
-        self.logger = logger or get_logger(f"service.command.{client_name}")
+        self.logger = logger or get_logger(f"service.commands.{client_name}")
         self.stub: Optional[CommandServiceStub] = None
 
     def connect(self) -> None:
@@ -64,16 +60,16 @@ class CommandServiceClient:
 
     def run_command(self, command: str, arguments: Optional[list] = None, target_user: str = "") -> dict:
         """
-        Executes a shell command and returns its result.
+        Executes a shell commands and returns its result.
 
         :param command: Command to execute (e.g., 'ls').
-        :param arguments: Arguments to pass to the command.
+        :param arguments: Arguments to pass to the commands.
         :param target_user: User to target if needed.
         :return: Dictionary containing 'exit_code', 'stdout', and 'stderr'.
 
         Example:
             result = client.run_command('ls', ['-l'], target_user='username')
-            print(result['stdout'])  # Should print the output of the 'ls -l' command
+            print(result['stdout'])  # Should print the output of the 'ls -l' commands
         """
         if not self.stub:
             raise RuntimeError("Client not connected. Call connect() before executing commands.")
@@ -93,7 +89,7 @@ class CommandServiceClient:
                 "stderr": response.stderr
             }
         except RpcError as e:
-            self.logger.error(f"gRPC error while executing command: {str(e.details())}")
+            self.logger.error(f"gRPC error while executing commands: {str(e.details())}")
             raise
 
     def stream_command(
@@ -103,12 +99,12 @@ class CommandServiceClient:
             target_user: str = ""
     ) -> Generator[Dict[str, Any], None, None]:
         """
-        Executes a shell command and streams its output in real-time.
+        Executes a shell commands and streams its output in real-time.
         This method is useful for long-running commands like 'tail -f', 'top', or build processes
         where you want to see output as it's generated.
 
         :param command: Command to execute (e.g., 'tail').
-        :param arguments: Arguments to pass to the command (e.g., ['-f', '/var/log/system.log']).
+        :param arguments: Arguments to pass to the commands (e.g., ['-f', '/var/log/system.log']).
         :param target_user: User to target if needed.
         :return: Generator yielding dictionaries with 'output' and 'is_error' fields.
 
@@ -136,7 +132,7 @@ class CommandServiceClient:
         )
 
         try:
-            self.logger.info(f"Streaming command: {command} {' '.join(arguments or [])}")
+            self.logger.info(f"Streaming commands: {command} {' '.join(arguments or [])}")
 
             # Get the streaming response from the server
             stream = self.stub.StreamCommand(request)
@@ -148,14 +144,14 @@ class CommandServiceClient:
                 }
 
         except RpcError as e:
-            self.logger.error(f"gRPC error while streaming command: {str(e.details())}")
+            self.logger.error(f"gRPC error while streaming commands: {str(e.details())}")
             # Yield error information instead of raising to allow graceful handling
             yield {
                 "output": f"gRPC Error: {str(e.details())}\n",
                 "is_error": True
             }
         except Exception as e:
-            self.logger.error(f"Unexpected error while streaming command: {str(e)}")
+            self.logger.error(f"Unexpected error while streaming commands: {str(e)}")
             yield {
                 "output": f"Unexpected Error: {str(e)}\n",
                 "is_error": True

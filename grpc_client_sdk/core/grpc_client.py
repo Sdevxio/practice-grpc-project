@@ -22,7 +22,7 @@ class GrpcClient:
         actual_port (int): The actual port used for connection.
     """
 
-    DEFAULT_FALLBACK_PORTS = [50051, 50052, 50053]  # Removed agent ports 55000, 55001 to prevent cross-user connections
+    DEFAULT_FALLBACK_PORTS = [50051, 50052, 50053]
 
     def __init__(self, host: str, port: int, logger: Optional[Logger] = None):
         """
@@ -67,7 +67,7 @@ class GrpcClient:
             target = f"{self.host}:{port}"
 
             try:
-                self.logger.info(f"Attempting to connect to {target}")
+                self.logger.debug(f"Attempting to connect to {target}")
                 self.channel = grpc.insecure_channel(
                     self.target,
                     options=[

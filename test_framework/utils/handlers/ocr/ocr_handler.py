@@ -1,8 +1,8 @@
 import pytesseract
 from PIL import Image
 
-from test_framework.utils.consts.constants import TESSERACT_OCR_PATH
 from test_framework.utils import get_logger
+from test_framework.utils.consts.constants import TESSERACT_OCR_PATH
 
 logger = get_logger("framework.handler.ocr")
 
@@ -22,7 +22,7 @@ def extract_text_from_image(image_path: str) -> str:
         # Try to find tesseract in common locations
         import shutil
         tesseract_path = shutil.which("tesseract") or TESSERACT_OCR_PATH
-        
+
         if tesseract_path and shutil.which("tesseract"):
             pytesseract.pytesseract.tesseract_cmd = tesseract_path
             image = Image.open(image_path).convert("L")
@@ -30,7 +30,6 @@ def extract_text_from_image(image_path: str) -> str:
             return extracted_text.strip()
         else:
             logger.warning("Tesseract not found - OCR extraction skipped")
-            return "admin"  # Return fallback for testing
+            return ""
     except Exception as e:
-        logger.warning(f"OCR extraction failed: {e} - using fallback")
-        return "admin"  # Return fallback for testing
+        raise RuntimeError(f"OCR extraction failed: {e}")

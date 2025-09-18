@@ -18,7 +18,6 @@ def test_get_agent(setup):
 
     # Test if the client can get an agent by username
     client = registry_client.get_agent(username=username)
-    print(f"Client info for '{username}': {client}")
     assert client is not None, f"Failed to get agent info for username: {username}"
 
 def test_registry_list_agents(setup):
@@ -36,7 +35,6 @@ def test_registry_list_agents(setup):
 
     # Test if the client can list all agents
     agents = registry_client.list_agents()
-    print(f"Registered agents: {agents}")
     assert agents is not None, "Failed to list agents"
 
     expected_users = [

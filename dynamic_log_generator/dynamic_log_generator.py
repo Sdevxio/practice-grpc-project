@@ -422,7 +422,7 @@ def main():
     # Set up signal handler for graceful shutdown
     signal.signal(signal.SIGINT, signal_handler)
 
-    # Parse command line arguments
+    # Parse commands line arguments
     import argparse
     parser = argparse.ArgumentParser(description="Dynamic Log Simulator")
     parser.add_argument("--log-file", default="dynamic_test.log",

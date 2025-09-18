@@ -33,7 +33,7 @@ class SessionContextBuilder:
         root = ServiceContext(client_name="root", logger=logger, test_context=test_context)
         for name, cls in [
             ("file_transfer", FileTransferServiceClient),
-            ("command", CommandServiceClient),
+            ("commands", CommandServiceClient),
             ("apple_script", AppleScriptServiceClient),
             ("connection", ConnectionServiceClient),
         ]:
@@ -43,7 +43,7 @@ class SessionContextBuilder:
         user = ServiceContext(client_name=username, logger=logger, test_context=test_context)
         for name, cls in [
             ("file_transfer", FileTransferServiceClient),
-            ("command", CommandServiceClient),
+            ("commands", CommandServiceClient),
             ("apple_script", AppleScriptServiceClient),
             ("connection", ConnectionServiceClient),
             ("screen_capture", ScreenCaptureServiceClient),
