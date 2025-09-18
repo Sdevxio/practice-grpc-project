@@ -3,8 +3,8 @@ import os
 from grpc_client_sdk.core.grpc_client_manager import GrpcClientManager
 from grpc_client_sdk.services.file_transfer_service_client import FileTransferServiceClient
 from test_framework.utils.handlers.artifacts.artifacts_handler import save_to_artifacts
-from test_framework.utils.handlers.file_analyzer import LogExtractor
-from test_framework.utils.handlers.file_analyzer import LogParser
+from test_framework.utils.handlers.file_analyzer.extractor import LogExtractor
+from test_framework.utils.handlers.file_analyzer.parser import LogParser
 
 
 def test_extract_card_ids(setup, test_logger):
@@ -25,7 +25,7 @@ def test_extract_card_ids(setup, test_logger):
     LOG_TAIL_SIZE = "10485760"  # 10MB in bytes
 
     # Download just the tail of the log file
-    remote_path = "/Library/Logs/testlogfile.log"
+    remote_path = "/Library/Logs/imprivata.log"
     content = file_transfer_client.download_file(remote_path, tail_bytes=LOG_TAIL_SIZE)
     assert content is not None, f"Failed to download file: {remote_path}"
 
@@ -44,7 +44,7 @@ def test_extract_card_ids(setup, test_logger):
 
     # Extract card IDs
     extractor = LogExtractor()
-    card_ids = extractor.find_card_activity(entries)
+    card_ids = extractor.extract_card_ids(entries)
 
     # Display results
     test_logger.info(f"Found {len(card_ids)} card ID entries")
@@ -54,7 +54,7 @@ def test_extract_card_ids(setup, test_logger):
             test_logger.info(f"{i + 1}. [{entry.timestamp}] {card_id} - {entry.component}/{entry.subcomponent}")
 
     # Extract usernames
-    usernames = extractor.find_card_activity(entries)
+    usernames = extractor.extract_usernames(entries)
     test_logger.info(f"Found {len(usernames)} username entries")
     if usernames:
         test_logger.info("First 5 usernames:")

@@ -2,7 +2,6 @@
 Config Loader for YAML files, JSON files, and other formats.
 This module provides a simple way to find and load configuration files
 from specified directories, supporting both YAML and JSON formats.
-
 """
 import json
 from pathlib import Path
@@ -21,7 +20,11 @@ from test_framework.utils.consts.constants import (
 
 class ConfigLoader:
     """
-    Basic configs loader - finds and loads configs files
+    Configuration loader, supports YAML and JSON formats
+
+    Usage:
+        loader = ConfigLoader()
+        config = loader.load_config(name="my_config", config_module="config")
     """
 
     @staticmethod

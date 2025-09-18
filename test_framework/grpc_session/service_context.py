@@ -22,25 +22,34 @@ class ServiceContext:
 
     Example:
         context = ServiceContext(client_name="example_client")
-        context.register_service("command", CommandServiceClient)
+        context.register_service("commands", CommandServiceClient)
         context.register_service("file_transfer", FileTransferServiceClient)
-        command_service = context.get_service("command")
+        command_service = context.get_service("commands")
         command_service.run("ls -la")
         # Alternatively, access services as attributes
-        command_service = context.command
+        command_service = context.commands
         command_service.run("ls -la")
     """
 
-    def __init__(self, client_name: str, logger=None):
+    def __init__(self, client_name: str, logger=None, test_context: str = None):
         """
         Initialize the ServiceContext with a client name and an optional logger.
 
         :param client_name: The name of the client, typically the username or system context.
         :param logger: Optional logger instance for logging messages.
+        :param test_context: Optional test context for correlated logging
         """
         self.client_name = client_name
-        self.logger = logger or get_logger(f"ServiceContext[{client_name}]")
+        self.test_context = test_context
         self._services: Dict[str, Any] = {}
+
+        # Create correlated logger name
+        if test_context:
+            logger_name = f"test.{test_context}.service_context.{client_name}"
+        else:
+            logger_name = f"framework.service_context.{client_name}"
+
+        self.logger = logger or get_logger(logger_name)
 
     def register_service(self, name: str, service_class: Type):
         """

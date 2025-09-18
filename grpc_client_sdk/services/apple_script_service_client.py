@@ -43,7 +43,7 @@ class AppleScriptServiceClient:
         :param logger: Custom logger instance. If None, a default logger is created.
         """
         self.client_name = client_name
-        self.logger = logger or get_logger(f"AppleScriptServiceClient[{client_name}]")
+        self.logger = logger or get_logger(f"service.apple_script.{client_name}")
         self.stub: Optional[AppleScriptServiceStub] = None
 
     def connect(self):

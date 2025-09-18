@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Dashboard - Complete Historical Data</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Enhanced Professional Styling */
+        * {{ box-sizing: border-box; }}
+
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+        }}
+
+        .container {{
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+            position: relative;
+        }}
+
+        .container::before {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2ecc71, #f39c12, #e74c3c);
+        }}
+
+        .header {{
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }}
+
+        .header h1 {{
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }}
+
+        .header .subtitle {{
+            margin: 10px 0 0 0;
+            opacity: 0.8;
+            font-size: 1.1em;
+        }}
+
+        .stats-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }}
+
+        .stat-card {{
+            background: white;
+            padding: 28px 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }}
+
+        .stat-card::before {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }}
+
+        .stat-card:hover {{
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }}
+
+        .stat-card:hover::before {{
+            opacity: 1;
+        }}
+
+        .stat-value {{
+            font-size: 2.4em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            line-height: 1;
+        }}
+
+        .stat-label {{
+            color: #7f8c8d;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 500;
+        }}
+
+        .chart-container {{
+            padding: 35px;
+            background: white;
+            margin: 0;
+        }}
+
+        .chart-title {{
+            text-align: center;
+            font-size: 1.6em;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 400;
+            position: relative;
+        }}
+
+        .chart-title::after {{
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }}
+
+        .trend-section {{
+            background: #f8f9fa;
+            padding: 20px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e9ecef;
+        }}
+
+        .trend-badge {{
+            background: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #2c3e50;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }}
+
+        .trend-badge.improving {{
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }}
+
+        .trend-badge.degrading {{
+            border-color: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }}
+
+        .trend-badge.stable {{
+            border-color: #95a5a6;
+            background: #ecf0f1;
+            color: #2c3e50;
+        }}
+
+        .database-info {{
+            font-size: 0.9em;
+            color: #7f8c8d;
+            background: #ecf0f1;
+            padding: 10px 20px;
+            border-radius: 20px;
+        }}
+
+        .latest-test {{
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }}
+
+        .latest-test .stat-value {{
+            color: white;
+        }}
+
+        .latest-test .stat-label {{
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }}
+
+        .timing-table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }}
+
+        .timing-table th,
+        .timing-table td {{
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }}
+
+        .timing-table th {{
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }}
+
+        .timing-table tr:nth-child(even) {{
+            background: #f9f9f9;
+        }}
+
+        .timing-table tr:hover {{
+            background: #e8f4fd;
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }}
+
+        .timing-table td:first-child {{
+            font-weight: 500;
+            color: #34495e;
+        }}
+
+        .duration-good {{ color: #27ae60; font-weight: 700; }}
+        .duration-warning {{ color: #f39c12; font-weight: 700; }}
+        .duration-bad {{ color: #e74c3c; font-weight: 700; }}
+
+        .footer {{
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            background: #f8f9fa;
+            font-size: 0.9em;
+        }}
+
+        .chart-wrapper {{
+            position: relative;
+            height: 400px;
+            margin-bottom: 20px;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Performance Dashboard</h1>
+            <div class="subtitle">Complete Historical Performance Analysis</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card latest-test">
+                <div class="stat-value">{latest_duration:.3f}s</div>
+                <div class="stat-label">Latest Test</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{average_duration:.3f}s</div>
+                <div class="stat-label">Average Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{min_duration:.3f}s</div>
+                <div class="stat-label">Best Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{max_duration:.3f}s</div>
+                <div class="stat-label">Worst Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{total_tests}</div>
+                <div class="stat-label">Total Tests</div>
+            </div>
+        </div>
+
+        <div class="trend-section">
+            <div class="trend-badge {trend_class}">
+                <span class="trend-text">Performance Trend:</span>
+                <span class="trend-icon">{trend_icon}</span>
+                <span>{trend_title}</span>
+            </div>
+            <div class="database-info">
+                {database_info}
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">Complete Performance History</div>
+            <div class="chart-wrapper">
+                <canvas id="timingChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>Recent Test Results</h3>
+            <table class="timing-table">
+                <thead>
+                    <tr>
+                        <th>Test Time</th>
+                        <th>Duration</th>
+                        <th>Milliseconds</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {table_rows}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            Last updated: {last_updated} |
+            Performance threshold: 3.0 seconds |
+            Total historical records: {total_records}
+        </div>
+    </div>
+
+    <script>
+        // EMBEDDED_PERFORMANCE_DATA_PLACEHOLDER - This will be replaced with actual data
+        const performanceData = {embedded_chart_data};
+
+        // Create enhanced chart with all historical data
+        const ctx = document.getElementById('timingChart').getContext('2d');
+        const chart = new Chart(ctx, {{
+            type: 'line',
+            data: {{
+                labels: performanceData.labels,
+                datasets: [{{
+                    label: 'Response Time (seconds)',
+                    data: performanceData.values,
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#3498db',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }}]
+            }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {{
+                    legend: {{
+                        display: true,
+                        position: 'top'
+                    }},
+                    tooltip: {{
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {{
+                            title: function(context) {{
+                                const index = context[0].dataIndex;
+                                return performanceData.tooltips[index] || context[0].label;
+                            }},
+                            label: function(context) {{
+                                return `Duration: ${{context.parsed.y.toFixed(3)}}s`;
+                            }}
+                        }}
+                    }}
+                }},
+                scales: {{
+                    y: {{
+                        beginAtZero: true,
+                        title: {{
+                            display: true,
+                            text: 'Duration (seconds)'
+                        }},
+                        grid: {{
+                            color: 'rgba(0,0,0,0.1)'
+                        }}
+                    }},
+                    x: {{
+                        title: {{
+                            display: true,
+                            text: 'Test Execution Timeline'
+                        }},
+                        grid: {{
+                            color: 'rgba(0,0,0,0.1)'
+                        }}
+                    }}
+                }},
+                elements: {{
+                    point: {{
+                        hoverBackgroundColor: '#2980b9'
+                    }}
+                }},
+                interaction: {{
+                    intersect: false,
+                    mode: 'index'
+                }}
+            }}
+        }});
+
+        // Add threshold line
+        const thresholdPlugin = {{
+            id: 'thresholdLine',
+            afterDraw: function(chart) {{
+                const ctx = chart.ctx;
+                const chartArea = chart.chartArea;
+                const threshold = 3.0;
+
+                const yPosition = chart.scales.y.getPixelForValue(threshold);
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(chartArea.left, yPosition);
+                ctx.lineTo(chartArea.right, yPosition);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#e74c3c';
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.restore();
+            }}
+        }};
+
+        Chart.register(thresholdPlugin);
+
+        console.log('Performance Dashboard Loaded');
+        console.log(`Total Records: ${{performanceData.values.length}}`);
+        console.log(`Latest Performance: ${{performanceData.values[performanceData.values.length - 1]?.toFixed(3) || 'N/A'}}s`);
+    </script>
+</body>
+</html>

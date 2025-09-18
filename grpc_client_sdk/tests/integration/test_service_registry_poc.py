@@ -14,10 +14,10 @@ class TestServiceRegistryBasics:
 
     def test_simple_command(self, command):
         """
-        Simple command execution - the most common test pattern.
+        Simple commands execution - the most common test pattern.
         
         OLD approach required: command_service, setup, understanding fixture chains
-        NEW approach: just ask for 'command' fixture
+        NEW approach: just ask for 'commands' fixture
         """
         result = command("whoami")
         assert result.exit_code == 0
@@ -25,7 +25,7 @@ class TestServiceRegistryBasics:
 
     def test_smart_command_with_context(self, command):
         """
-        Smart command that can handle both user and root contexts.
+        Smart commands that can handle both user and root contexts.
         
         This demonstrates the 'smart' aspect - the same fixture can handle
         different contexts based on parameters.
@@ -69,7 +69,7 @@ class TestServiceRegistryBasics:
         test_content = "Hello from Service Registry test!"
         file_path = temp_file(test_content)
         
-        # Verify file exists using command service
+        # Verify file exists using commands service
         result = command(f"test -f {file_path} && echo 'file_exists'")
         assert result.exit_code == 0
         assert "file_exists" in result.stdout
@@ -85,11 +85,11 @@ class TestExplicitContextControl:
         This was impossible with the old approach - you could only get
         one context at a time. Now it's simple and clear.
         """
-        # Root command for system operations
+        # Root commands for system operations
         root_result = root_command("pwd")  # Should work in root context
         assert root_result.exit_code == 0
         
-        # User command for user operations  
+        # User commands for user operations
         user_result = user_command("pwd")  # Should work in user context
         assert user_result.exit_code == 0
         
@@ -125,7 +125,7 @@ class TestAdvancedUsage:
         This shows how to use the registry directly for complex scenarios.
         """
         # Get services with custom configuration
-        command_service = service_registry.get_service("command", context="user")
+        command_service = service_registry.get_service("commands", context="user")
         
         # Use the service
         result = command_service.run_command("echo 'direct registry access'")
@@ -144,7 +144,7 @@ class TestAdvancedUsage:
         
         # Session should have user context with services
         assert hasattr(admin_session, 'user_context')
-        assert hasattr(admin_session.user_context, 'command')
+        assert hasattr(admin_session.user_context, 'commands')
         
         # Use the session
         command_result = admin_session.user_context.command.run_command("whoami")
@@ -163,8 +163,8 @@ class TestAdvancedUsage:
         # Verify we have expected services
         assert "root" in debug_services
         assert "user" in debug_services
-        assert "command" in debug_services["root"]
-        assert "command" in debug_services["user"]
+        assert "commands" in debug_services["root"]
+        assert "commands" in debug_services["user"]
         assert "screen_capture" in debug_services["user"]
 
 
@@ -258,7 +258,7 @@ class TestPerformanceAndReliability:
         
         This tests the registry's ability to handle different contexts.
         """
-        command_service = service_registry.get_service("command", context=context)
+        command_service = service_registry.get_service("commands", context=context)
         result = command_service.run_command("echo 'context test'")
         assert result.exit_code == 0
         assert "context test" in result.stdout
@@ -282,7 +282,7 @@ def test_migration_comparison():
         test_logger.info("Starting test")
         temp_file = temp_file_factory(content="test data", suffix=".txt")
         
-        # Limited - can only use root command service
+        # Limited - can only use root commands service
         result = command_service.run_command(f"test -f {temp_file}")
         assert result.exit_code == 0
         
@@ -290,17 +290,17 @@ def test_migration_comparison():
         screenshot = user_services.screen_capture.capture_screenshot()
         assert screenshot["success"]
         
-        # Can't easily get user command service!
+        # Can't easily get user commands service!
     """
     
     # NEW APPROACH (simple, clear)
     """
-    def test_new_approach(command, screen_capture, temp_file):
+    def test_new_approach(commands, screen_capture, temp_file):
         # Simple, clear dependencies
         temp_file_path = temp_file("test data")
         
-        # Smart command service - works for both contexts
-        result = command(f"test -f {temp_file_path}")
+        # Smart commands service - works for both contexts
+        result = commands(f"test -f {temp_file_path}")
         assert result.exit_code == 0
         
         # Simple screen capture
@@ -308,7 +308,7 @@ def test_migration_comparison():
         assert screenshot["success"]
         
         # Can easily get both contexts when needed:
-        # root_result = command("sudo something", as_root=True)
+        # root_result = commands("sudo something", as_root=True)
     """
     
     pytest.skip("This is a documentation test, not meant to run")

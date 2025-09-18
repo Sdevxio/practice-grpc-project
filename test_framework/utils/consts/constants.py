@@ -20,8 +20,8 @@ ERROR_FILE_NOT_FOUND = "File not found: {path}"
 ERROR_YAML_PARSE = "Error parsing YAML file: {path}"
 
 # Tesseract OCR path
-TESSERACT_OCR_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+TESSERACT_OCR_PATH = "/opt/homebrew/bin/tesseract"
 
-# Remote log path for test_log.log on macOS
-REMOTE_LOG_NAME = "test_log.log"
-REMOTE_LOG_PATH = f"/Library/Logs/{REMOTE_LOG_NAME}"
+# Remote log path for file logs on macOS
+REMOTE_LOG_NAME = "dynamic_test.log"
+REMOTE_LOG_PATH = f"/Users/admin/python-practice/dynamic_log_generator/{REMOTE_LOG_NAME}"

@@ -1,32 +1,27 @@
 """
-Updated StationLoader with backward compatibility.
-
-This file maintains the same interface as the original StationLoader
-but uses the new ConfigurationManager internally for better organization.
+Station configuration loader with backward compatibility.
+This module provides a StationLoader class that loads station configurations
+from a new configuration system while maintaining backward compatibility
+with legacy configuration formats.
+It includes methods to retrieve station details, user assignments,
+test users, and other related configurations.
 """
-
-from typing import Dict, Any, List
 import warnings
+from typing import Dict, Any, List
 
-from test_framework.utils import (get_logger)
-from test_framework.utils.loaders.config_manager import (ConfigurationManager)
+from test_framework.utils import get_logger
+from test_framework.utils.loaders.config_manager import ConfigManager
 
 
 class StationLoader:
-    """
-    Station-specific config loader with backward compatibility.
+    """Station configuration loader with backward compatibility."""
 
-    Maintains the same interface as the original StationLoader but uses
-    the new component-centric configuration system internally.
-    """
-
-    def __init__(self, config_name="stations"):
-        """Initialize StationLoader with singleton ConfigurationManager."""
+    def __init__(self):
+        """Initialize the StationLoader."""
         self.logger = get_logger("StationLoader")
-
         # Use singleton instance instead of creating new one
         try:
-            self.config_manager = ConfigurationManager.get_instance()
+            self.config_manager = ConfigManager.get_instance()
             self._use_new_system = True
             self.logger.debug("Using singleton configuration manager")
         except Exception as e:
@@ -37,7 +32,17 @@ class StationLoader:
             ) from e
 
     def get_station_config(self, station_name: str, protocol: str = None) -> Dict[str, Any]:
-        """Get station config with defaults merged."""
+        """
+        Get station configuration in legacy format for backward compatibility.
+
+        :param station_name: Name of the station.
+        :param protocol: Optional protocol filter ('http', 'mqtt', 'grpc').
+        :return: Station configuration dictionary.
+        Example:
+            loader = StationLoader()
+            config = loader.get_station_config('station1', protocol='http')
+            print(config)
+        """
         try:
             # Get config in legacy format for backward compatibility
             config = self.config_manager.get_legacy_station_config(station_name)
@@ -55,7 +60,19 @@ class StationLoader:
             raise
 
     def get_station_endpoint(self, station_name: str, protocol: str) -> str:
-        """Get endpoint URL for station and protocol."""
+        """
+        Get station endpoint URL based on protocol.
+
+        :param station_name: Name of the station.
+        :param protocol: Protocol type ('http', 'mqtt', 'grpc').
+        :return: Endpoint URL as a string.
+        Example:
+            loader = StationLoader()
+            http_url = loader.get_station_endpoint('station1', 'http')
+            mqtt_url = loader.get_station_endpoint('station1', 'mqtt')
+            grpc_target = loader.get_station_endpoint('station1', 'grpc')
+            print(f"HTTP URL: {http_url}, MQTT URL: {mqtt_url}, gRPC Target: {grpc_target}")
+        """
         config = self.get_station_config(station_name, protocol)
 
         if protocol == 'http':
@@ -114,6 +131,10 @@ class StationLoader:
         """Get E2E test defaults (new method)."""
         return self.config_manager.get_e2e_defaults()
 
+    def get_domain(self) -> Dict[str, Any]:
+        """Get domain configuration (new method)."""
+        return self.config_manager.get_domain()
+
     def get_station_groups(self) -> Dict[str, Any]:
         """Get station group configurations (new method)."""
         return self.config_manager.get_station_groups()
@@ -135,7 +156,6 @@ class StationLoader:
         self.config_manager.reload_configurations()
 
 
-# Keep the old import working
 class LegacyStationLoader(StationLoader):
     """Alias for backward compatibility."""
 

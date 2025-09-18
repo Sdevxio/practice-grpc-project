@@ -87,6 +87,6 @@ test_suites:
       session_timeout: 60
       tap_timeout: 10
       log_retrieval_timeout: 30
-      log_file_path: "/Users/admin/pro-mac-client-test-fixtures/dynamic_log_generator/dynamic_test.log"
+      log_file_path: "/Users/admin/PA/dynamic_log_generator/dynamic_test.log"
       log_tail_size: "2097152" # 2MB
 

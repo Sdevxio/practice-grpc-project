@@ -1,56 +1,47 @@
-"""
-Clean conftest.py using domain-specific fixture architecture.
+import time
 
-Pure pytest infrastructure only - all fixtures moved to domain-specific modules.
-"""
-
-import os
 import pytest
 
-# Load domain-specific fixtures
-pytest_plugins = [
-    "test_framework.fixtures.logging_fixtures",
-    "test_framework.fixtures.config_fixtures",
-    "test_framework.fixtures.session_fixtures",
-    "test_framework.fixtures.hardware_fixtures", 
-    "test_framework.fixtures.workflow_fixtures",
-    "test_framework.fixtures.user_state_fixtures",
-]
+from test_framework.utils.consts.constants import IMPRIVATA_LOG_NAME
+from test_framework.utils.handlers.artifacts.artifacts_handler import save_to_artifacts
+from test_framework.utils.handlers.file_analyzer import LogParser, LogExtractor
 
 
-# Command line options for hardware control
-def pytest_addoption(parser):
-    """Add command line options for hardware control."""
-    options = [
-        ("--no-tapping", "store_true", False, "Disable all tapping operations for local testing"),
-        ("--tapping-debug", "store_true", False, "Enable debug logging for tapping operations")
-    ]
+@pytest.fixture(scope="function")
+def prepare_log_file(session_manager, test_config, test_logger):
+    """Fixture to download, save, and prepare the log file from the macOS endpoint for analysis."""
+    _, session_context = session_manager
+    log_file_path = test_config['log_file_path']
+    test_logger.info("Downloading log file from macOS endpoint")
 
-    for option, action, default, help_text in options:
-        parser.addoption(option, action=action, default=default, help=help_text)
+    # Wait for the log file to be available
+    time.sleep(10)
+    file_content = session_context.root_context.file_transfer.download_file(
+        log_file_path,
+        tail_bytes="2097152"
+    )
 
+    if not file_content:
+        raise RuntimeError(f"Failed to download log file from '{log_file_path}'")
 
-@pytest.fixture(autouse=True)
-def apply_hardware_options(request):
-    """Apply hardware-specific command line options."""
-    if request.config.getoption("--no-tapping"):
-        os.environ["ENABLE_TAPPING"] = "false"
+    test_logger.info(f"Downloaded {len(file_content)} bytes from log file")
 
-    if request.config.getoption("--tapping-debug"):
-        _enable_tapping_debug_logging()
+    # Save content to local file for analysis
+    local_log_path = save_to_artifacts(file_content, IMPRIVATA_LOG_NAME)
+    test_logger.info(f"Log file saved in: '{local_log_path}'")
 
-
-def _enable_tapping_debug_logging():
-    """Enable debug logging for tapping-related loggers."""
-    import logging
-    tapping_loggers = ["login_tapper", "logoff_tapper", "tapping_manager"]
-    for logger_name in tapping_loggers:
-        logging.getLogger(logger_name).setLevel(logging.DEBUG)
+    return local_log_path
 
 
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item):
-    """Hook to capture test outcomes."""
-    outcome = yield
-    rep = outcome.get_result()
-    setattr(item, f"rep_{rep.when}", rep)
+@pytest.fixture(scope="function")
+def parse_log_file():
+    """Fixture that provides a callable to parse a log file and return a LogExtractor and parsed entries."""
+    parser = LogParser()
+    data_extractor = LogExtractor()
+
+    def parse(log_file_path):
+        """Parse the specified log file and return the extractor and entries."""
+        entries = parser.parse_file(log_file_path)
+        return data_extractor, entries
+
+    return parse

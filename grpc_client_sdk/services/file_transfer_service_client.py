@@ -45,7 +45,7 @@ class FileTransferServiceClient:
         None, a default logger is created.
         """
         self.client_name = client_name
-        self.logger = logger or get_logger(f"FileTransferServiceClient[{client_name}]")
+        self.logger = logger or get_logger(f"service.file_transfer.{client_name}")
         self.stub: Optional[FileTransferServiceStub] = None
 
     def connect(self) -> None:

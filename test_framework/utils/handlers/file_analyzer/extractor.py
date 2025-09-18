@@ -10,7 +10,7 @@ class LogExtractor:
 
     def __init__(self):
         """Initialize the extractor."""
-        self.logger = get_logger(__name__)
+        self.logger = get_logger("framework.handler.log_extractor")
         self._logged_timestamp_errors = set()  # Track already logged timestamp errors
 
     def _parse_timestamp(self, timestamp_str: str) -> datetime:
@@ -49,7 +49,7 @@ class LogExtractor:
 
             field_value = getattr(entry, field_name)
             field_str = str(field_value) if field_value is not None else ""
-            pattern_str = str(pattern)
+            pattern_str = str(pattern).lower()
 
             if pattern_str not in field_str.lower():
                 return False

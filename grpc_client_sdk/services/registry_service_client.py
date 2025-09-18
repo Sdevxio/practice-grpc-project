@@ -15,7 +15,7 @@ class RegistryServiceClient:
     This client is used during session bootstrapping to:
     - Look up an active agent by username
     - Retrieve available agents registered on the system
-    This client is **read-only** — it does NOT support registration, deregistration,
+    This client is **read-only** â€” it does NOT support registration, deregistration,
     or heartbeat mechanisms. It is intended for test controller-side lookup only.
 
     Attributes:
@@ -40,7 +40,7 @@ class RegistryServiceClient:
         None, a default logger is created.
         """
         self.client_name = client_name
-        self.logger = logger or get_logger(f"RegistryServiceClient[{client_name}]")
+        self.logger = logger or get_logger(f"service.registry.{client_name}")
         self.stub: Optional[RegistryServiceStub] = None
         self.host: Optional[str] = None  # Used in SessionContextBuilder if needed
 

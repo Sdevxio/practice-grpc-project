@@ -14,7 +14,7 @@ class LoggerFailedTestHandler:
 
     def __init__(self, failed_tests_dir: str, main_log_file: str):
         """
-        Initialize the FailedTestLogHandler.
+        Initialize the LoggerFailedTestHandler.
 
         :param failed_tests_dir: Directory where failed test logs are stored.
         :param main_log_file: Path to the main log file.
@@ -30,7 +30,7 @@ class LoggerFailedTestHandler:
         :return: Path to the created log file or None if test_name is empty.
 
         Example:
-            log_handler = FailedTestLogHandler('/path/to/failed_tests', '/path/to/main_log.log')
+            log_handler = LoggerFailedTestHandler('/path/to/failed_tests', '/path/to/main_log.log')
             log_path = log_handler.create_log('test_case_name')
             print(f"Log created at: {log_path}")
         """
