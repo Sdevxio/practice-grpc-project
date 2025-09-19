@@ -63,43 +63,72 @@ class AppleScriptLogoutManager:
     def _execute_applescript_logout(self, session_context, expected_user: str) -> bool:
         """
         Execute AppleScript logout command for specified user.
-        Uses the comprehensive AppleScript that handles confirmation dialogs.
+        Uses a smart fallback strategy: simple logout first, then with confirmation handling.
         
         :param session_context: Session context for AppleScript execution
         :param expected_user: Username to logout
         :return: True if AppleScript execution was successful
         """
+        # Try simple logout first (works if confirmation prompt is disabled)
+        if self._try_simple_logout(session_context):
+            return True
+            
+        # If simple logout didn't work, try with confirmation handling
+        self.logger.info("Simple logout failed, trying logout with confirmation handling")
+        return self._try_logout_with_confirmation(session_context)
+    
+    def _try_simple_logout(self, session_context) -> bool:
+        """
+        Try the simple logout approach (works when confirmation prompt is disabled).
+        
+        :param session_context: Session context for AppleScript execution
+        :return: True if simple logout was successful
+        """
         try:
-            # Use the comprehensive AppleScript that handles confirmation dialogs
-            self.logger.info(f"Executing comprehensive AppleScript logout for user: {expected_user}")
+            self.logger.info("Attempting simple logout (no confirmation dialog expected)")
             script_result = session_context.user_context.apple_script.run_applescript(
-                AppleScripts.APPLESCRIPT_LOG_OUT_USER
+                AppleScripts.APPLESCRIPT_LOG_OUT_SIMPLE
             )
             
-            self.logger.info(f"AppleScript execution result: {script_result}")
-
-            if script_result.get("success", False):
-                output = script_result.get('output', 'No output')
-                self.logger.info(f"AppleScript logout executed successfully: {output}")
-                
-                # Check if logout was actually initiated
-                if any(keyword in output.lower() for keyword in ['log out confirmed', 'logout sequence initiated']):
-                    self.logger.info("AppleScript confirmed logout sequence was initiated")
-                    return True
-                elif 'log out menu item not found' in output.lower():
-                    self.logger.error("AppleScript could not find Log Out menu item")
-                    return False
-                else:
-                    self.logger.info("AppleScript executed but checking result...")
-                    return True  # Assume success if no error reported
-                    
+            self.logger.debug(f"Simple logout result: {script_result}")
+            
+            if script_result and script_result.get("success", False):
+                self.logger.info("✅ Simple logout executed successfully")
+                return True
             else:
-                error_msg = script_result.get('error', 'Unknown error')
-                self.logger.error(f"AppleScript logout failed: {error_msg}")
+                error_msg = script_result.get('error', 'Unknown error') if script_result else 'No result'
+                self.logger.debug(f"Simple logout failed: {error_msg}")
                 return False
-
+                
         except Exception as e:
-            self.logger.error(f"AppleScript execution failed: {e}")
+            self.logger.debug(f"Simple logout exception: {e}")
+            return False
+    
+    def _try_logout_with_confirmation(self, session_context) -> bool:
+        """
+        Try logout with confirmation dialog handling.
+        
+        :param session_context: Session context for AppleScript execution
+        :return: True if logout with confirmation was successful
+        """
+        try:
+            self.logger.info("Attempting logout with confirmation dialog handling")
+            script_result = session_context.user_context.apple_script.run_applescript(
+                AppleScripts.APPLESCRIPT_LOG_OUT_WITH_CONFIRM
+            )
+            
+            self.logger.info(f"Logout with confirmation result: {script_result}")
+            
+            if script_result and script_result.get("success", False):
+                self.logger.info("✅ Logout with confirmation executed successfully")
+                return True
+            else:
+                error_msg = script_result.get('error', 'Unknown error') if script_result else 'No result'
+                self.logger.error(f"Logout with confirmation failed: {error_msg}")
+                return False
+                
+        except Exception as e:
+            self.logger.error(f"Logout with confirmation exception: {e}")
             return False
 
     def _verify_logout(self, grpc_manager, expected_user: str, timeout: int) -> bool:
