@@ -10,9 +10,10 @@ from test_framework.utils.handlers.file_analyzer.parser import LogParser
 
 pytest_plugins = [
     "test_framework.fixtures.applescript_logout_manager",
+    "test_framework.fixtures.auth_manager_fixtures",
     "test_framework.fixtures.config_fixtures",
+    "test_framework.fixtures.console_user_fixtures",
     "test_framework.fixtures.logging_fixtures",
-    "test_framework.fixtures.login_state_fixtures",
     "test_framework.fixtures.session_fixtures",
 
 ]

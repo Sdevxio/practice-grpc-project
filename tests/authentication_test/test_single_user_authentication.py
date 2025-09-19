@@ -2,7 +2,7 @@ import pytest
 
 
 @pytest.mark.test_user("admin")
-def test_monitor_single_user_authentication(login_state, session_manager, test_logger, test_config, parse_log_file,
+def test_monitor_single_user_authentication(auth_manager, session_manager, test_logger, test_config, parse_log_file,
                                             prepare_log_file):
     """Test to verify single user authentication log entries."""
     expected_user = test_config["expected_user"]
