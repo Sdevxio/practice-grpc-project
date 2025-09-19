@@ -2,6 +2,32 @@ class AppleScripts:
     """
     A class to handle AppleScript commands.
     """
+    # Simple logout - works when confirmation prompt is disabled
+    APPLESCRIPT_LOG_OUT_SIMPLE = '''
+    tell application "System Events" to log out
+    '''
+    
+    # Logout with confirmation handling - for when prompt cannot be disabled
+    APPLESCRIPT_LOG_OUT_WITH_CONFIRM = '''
+    -- Ask macOS to log out
+    tell application "System Events" to log out
+    
+    -- Wait briefly so the confirmation sheet appears
+    delay 0.5
+    
+    -- Click the "Log Out" button if the sheet is showing
+    tell application "System Events"
+        if exists (process "SystemUIServer") then
+            tell process "SystemUIServer"
+                if exists (button "Log Out" of window 1) then
+                    click button "Log Out" of window 1
+                end if
+            end tell
+        end if
+    end tell
+    '''
+    
+    # Legacy complex script (kept for backward compatibility)
     APPLESCRIPT_LOG_OUT_USER = '''
     tell application "System Events"
         tell process "Finder"
