@@ -517,6 +517,51 @@ class PerformanceDatabase:
             self.logger.error(f"Failed to get database info: {e}")
             return {"error": str(e)}
 
+    def delete_last_record(self, test_name: str = None) -> bool:
+        """
+        Delete the last record from performance_results table.
+        
+        :param test_name: Optional filter by test name
+        :return: True if record was deleted, False otherwise
+        """
+        try:
+            with self.get_connection() as conn:
+                if test_name:
+                    # Delete last record for specific test
+                    delete_sql = """
+                    DELETE FROM performance_results 
+                    WHERE id = (
+                        SELECT id FROM performance_results 
+                        WHERE test_name = ? 
+                        ORDER BY id DESC LIMIT 1
+                    )
+                    """
+                    cursor = conn.execute(delete_sql, (test_name,))
+                else:
+                    # Delete last record overall
+                    delete_sql = """
+                    DELETE FROM performance_results 
+                    WHERE id = (
+                        SELECT id FROM performance_results 
+                        ORDER BY id DESC LIMIT 1
+                    )
+                    """
+                    cursor = conn.execute(delete_sql)
+                
+                conn.commit()
+                deleted_count = cursor.rowcount
+                
+                if deleted_count > 0:
+                    self.logger.info(f"Deleted last record{f' for test {test_name}' if test_name else ''}")
+                    return True
+                else:
+                    self.logger.warning(f"No records found to delete{f' for test {test_name}' if test_name else ''}")
+                    return False
+                    
+        except Exception as e:
+            self.logger.error(f"Failed to delete last record: {e}")
+            return False
+
     def close(self) -> None:
         """Close all database connections."""
         try:

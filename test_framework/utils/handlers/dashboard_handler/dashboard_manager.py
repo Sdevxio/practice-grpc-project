@@ -19,9 +19,9 @@ import json
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
 from test_framework.utils import get_logger
+from test_framework.utils.handlers.dashboard_handler import JsonDataHandler
 from test_framework.utils.handlers.dashboard_handler.database_handler import PerformanceDatabase, \
     PerformanceDatabaseError
-from test_framework.utils.handlers.dashboard_handler.json_handler import JsonDataHandler
 
 
 class PerformanceDashboardManager:
@@ -576,6 +576,23 @@ class PerformanceDashboardManager:
             history = history[-limit:]  # Get most recent
 
         return history
+
+    def delete_last_record(self, test_name: str = None) -> bool:
+        """
+        Delete the last record from the performance database.
+        
+        :param test_name: Optional filter by test name
+        :return: True if record was deleted, False otherwise
+        """
+        if self.use_sqlite and hasattr(self, 'db'):
+            try:
+                return self.db.delete_last_record(test_name)
+            except Exception as e:
+                self.logger.error(f"Failed to delete last record: {e}")
+                return False
+        else:
+            self.logger.warning("Delete operation only available for SQLite backend")
+            return False
 
     def close(self) -> None:
         """Close database connections and cleanup resources."""

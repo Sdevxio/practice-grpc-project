@@ -5,7 +5,7 @@ import pytest
 
 @pytest.mark.test_user("admin")
 @pytest.mark.auto_login(False)
-def test_applescript_logout_timing_validation(auth_manager, lightweight_session, applescript_logout_manager, test_config, test_logger):
+def test_applescript_logout_timing_validation(auth_manager, applescript_logout_manager, test_config, test_logger):
     """
     Test AppleScript logout timing and performance validation.
     """
@@ -42,9 +42,20 @@ def test_applescript_logout_timing_validation(auth_manager, lightweight_session,
         # Ensure clean state
         test_logger.info("=== Timing test cleanup ===")
         test_logger.info("⏱️ Starting AppleScript logout timing measurement")
-        # Use lightweight_session fixture (no timing interference)
+        # Create session context only when needed (no interference with card tapping)
         try:
-            manager, session_context = lightweight_session
+            from test_framework.grpc_session.session_manager import GrpcSessionManager
+            # Create session manager without delays for AppleScript logout
+            manager = GrpcSessionManager(
+                station_id=test_config["station_id"],
+                logger=test_logger,
+                test_context="applescript_cleanup"
+            )
+            session_context = manager.create_session(
+                expected_user=expected_user,
+                timeout=10
+            )
+            
             applescript_success = applescript_logout_manager.logout_user(
                 session_context=session_context,
                 grpc_manager=manager,
