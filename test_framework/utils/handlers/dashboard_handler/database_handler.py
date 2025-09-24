@@ -199,6 +199,11 @@ class PerformanceDatabase:
             if field not in test_data:
                 raise PerformanceDatabaseError(f"Missing required field: {field}")
 
+        # Validate duration is not negative (performance timing should be positive)
+        duration = float(test_data["duration"])
+        if duration < 0:
+            raise PerformanceDatabaseError(f"Invalid negative duration: {duration}s. Performance timing must be positive.")
+
         try:
             # Parse timestamp for date/time fields
             timestamp = datetime.fromisoformat(test_data["test_run_timestamp"])

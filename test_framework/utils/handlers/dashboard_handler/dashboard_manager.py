@@ -72,6 +72,11 @@ class PerformanceDashboardManager:
                           log_entry_timestamp: str = None, log_entry_message: str = None,
                           additional_data: Dict[str, Any] = None) -> str:
         """Save timing result with enterprise SQLite backend or JSON fallback."""
+        # Validate duration is not negative
+        if duration < 0:
+            self.logger.error(f"Rejected negative duration: {duration}s for test '{test_name}'. Performance timing must be positive.")
+            return None
+            
         now = datetime.now()
         timing_data = {
             "test_name": test_name,
