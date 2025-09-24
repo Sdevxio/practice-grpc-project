@@ -4,7 +4,7 @@ from test_framework.utils.handlers.dashboard_handler.dashboard_manager import Pe
 
 
 @pytest.mark.test_user("admin")
-def test_login_ui_performance(login_state, session_manager, parse_log_file, test_config, test_logger, prepare_log_file):
+def test_login_ui_performance(auth_manager, session_manager, parse_log_file, test_config, test_logger, prepare_log_file):
     """
     Test to measure the performance of the login UI process.
     """
@@ -24,10 +24,10 @@ def test_login_ui_performance(login_state, session_manager, parse_log_file, test
         db_path=r"C:\performance-data\performance.db"
     )
 
-    # Get tap timestamp from the login state fixtures
-    tap_timestamp = login_state.get_last_tap_timestamp()
+    # Get tap timestamp from the auth manager fixtures
+    tap_timestamp = auth_manager.get_last_tap_timestamp()
     test_logger.info(f"Login tap timestamp: {tap_timestamp}")
-    assert tap_timestamp is not None, "Tap timestamp should be available from login_state fixtures"
+    assert tap_timestamp is not None, "Tap timestamp should be available from auth_manager fixtures"
 
     # Initialize session manager and context
     manager, session_context = session_manager
@@ -41,8 +41,25 @@ def test_login_ui_performance(login_state, session_manager, parse_log_file, test
     test_logger.info(f"Validating {len(entries)} log entries for session activity")
 
 
+    # Filter entries to only those AFTER the tap timestamp to avoid old sessions
+    # Add small buffer (3 seconds before) to account for log writing delays and timing precision
+    from datetime import timedelta
+    buffer_time = tap_timestamp - timedelta(seconds=3)
+    filtered_entries = [
+        entry for entry in entries
+        if entry.timestamp and data_extractor._parse_timestamp(entry.timestamp) >= buffer_time
+    ]
+    test_logger.info(f"Filtered to {len(filtered_entries)} entries after {buffer_time} (3s before tap)")
+    
+    # Find recent entries for this user to ensure we get the current session
+    recent_user_entries = [
+        entry for entry in filtered_entries
+        if hasattr(entry, 'process_name') and entry.process_name == expected_user
+    ]
+    test_logger.info(f"Found {len(recent_user_entries)} recent entries for user {expected_user}")
+    
     session_activity = data_extractor.find_latest_entry_with_criteria(
-        entries,
+        filtered_entries,
         message_contains="sessionDidBecomeActive",
         component="DesktopAgent",
         entry_type="debug",

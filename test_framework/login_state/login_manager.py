@@ -8,6 +8,18 @@ from test_framework.utils import get_logger
 
 
 class LoginManager:
+    """
+    Login manager class for handling card tap operations for user authentication.
+    This class provides methods for performing login, logout, and force login operations
+    through card tap endpoints. It manages user to card endpoint mappings and handles
+    connection retries and error handling for tap operations.
+    
+    Attributes:
+        station_id (str): The station identifier for tap operations.
+        logger (Logger): Logger instance for tap operations.
+        last_tap_timestamp (datetime): Timestamp of the last successful tap operation.
+        user_tap_mapping (Dict[str, str]): Mapping of usernames to tap endpoint names.
+    """
     # User to tap endpoint mapping - can be overridden at test level
     DEFAULT_USER_TAP_MAPPING = {
         "macos_lab_1": "tap_card2_endpoint",
@@ -22,24 +34,62 @@ class LoginManager:
         self.user_tap_mapping = user_tap_mapping or self.DEFAULT_USER_TAP_MAPPING.copy()
 
     def set_user_tap_mapping(self, user: str, tap_endpoint: str):
-        """Set tap endpoint for a specific user."""
+        """
+        Set tap endpoint mapping for a specific user.
+        
+        :param user: Username to configure
+        :param tap_endpoint: Tap endpoint name to associate with user
+        """
         self.user_tap_mapping[user] = tap_endpoint
         self.logger.info(f"Set tap mapping: {user} -> {tap_endpoint}")
 
     def login_tap(self, user: str = None, max_attempts: int = 3, retry_delay: float = 1.0) -> bool:
-        """Perform login tap for specific user"""
+        """
+        Perform login tap operation for specific user.
+        This method executes a card tap login operation with retry logic for reliability.
+        
+        :param user: Username to login, uses default endpoint if None
+        :param max_attempts: Maximum number of retry attempts
+        :param retry_delay: Delay in seconds between retry attempts
+        :return: True if login tap completed successfully
+        """
         return self._perform_tap("login", user, max_attempts, retry_delay)
 
     def logout_tap(self, user: str = None, max_attempts: int = 3, retry_delay: float = 2.0) -> bool:
-        """Perform logout tap for specific user"""
+        """
+        Perform logout tap operation for specific user.
+        This method executes a card tap logout operation with retry logic for reliability.
+        
+        :param user: Username to logout, uses default endpoint if None
+        :param max_attempts: Maximum number of retry attempts
+        :param retry_delay: Delay in seconds between retry attempts
+        :return: True if logout tap completed successfully
+        """
         return self._perform_tap("logout", user, max_attempts, retry_delay)
 
     def force_tap(self, user: str = None, max_attempts: int = 3, retry_delay: float = 1.0) -> bool:
-        """Force tap regardless of current login state for specific user"""
+        """
+        Force tap operation regardless of current login state for specific user.
+        This method performs a forced tap operation without checking current authentication state.
+        
+        :param user: Username to force tap, uses default endpoint if None
+        :param max_attempts: Maximum number of retry attempts
+        :param retry_delay: Delay in seconds between retry attempts
+        :return: True if force tap completed successfully
+        """
         return self._perform_tap("force_login", user, max_attempts, retry_delay)
 
     def _perform_tap(self, operation: str, user: str = None, max_attempts: int = 3, retry_delay: float = 1.0) -> bool:
-        """Perform tap operation with retries for specific user."""
+        """
+        Perform tap operation with retry logic for specific user.
+        This method handles the retry logic and error handling for tap operations.
+        
+        :param operation: Type of operation (login, logout, force_login)
+        :param user: Username for the operation
+        :param max_attempts: Maximum number of retry attempts
+        :param retry_delay: Delay in seconds between retry attempts
+        :return: True if tap operation completed successfully
+        """
         user_info = f" for user '{user}'" if user else ""
         self.logger.info(f"Starting {operation} tap{user_info} (max attempts: {max_attempts})")
 
@@ -59,7 +109,14 @@ class LoginManager:
         return False
 
     def _execute_single_tap(self, user: str = None) -> bool:
-        """Execute single tap for both login/logout. Handles connection and errors."""
+        """
+        Execute single tap operation for login or logout.
+        This method handles the actual tap execution including tapper service connection,
+        tap function resolution, and error handling.
+        
+        :param user: Username for the tap operation
+        :return: True if tap executed successfully
+        """
         try:
             tapper_service = TapperService(station_id=self.station_id)
 
@@ -113,11 +170,19 @@ class LoginManager:
             return dual_tap_sequences.tap_card2_endpoint
 
     def get_supported_users(self) -> list:
-        """Get list of users with configured tap mappings."""
+        """
+        Get list of users with configured tap mappings.
+        
+        :return: List of usernames that have tap endpoint configurations
+        """
         return list(self.user_tap_mapping.keys())
 
     def get_user_tap_mapping(self) -> Dict[str, str]:
-        """Get current user to tap endpoint mapping."""
+        """
+        Get current user to tap endpoint mapping configuration.
+        
+        :return: Dictionary mapping usernames to tap endpoint names
+        """
         return self.user_tap_mapping.copy()
 
 
