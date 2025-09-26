@@ -59,6 +59,11 @@ class GrpcSessionManager:
         # Step 2: Wait for user login
         agent_port = self._wait_for_agent_login(expected_user, timeout)
 
+        # Build user context target string (host:port)
+        host = self.root_target.split(":")[0]
+        user_target = f"{host}:{agent_port}"
+        GrpcClientManager.register_clients(name=expected_user, target=user_target)
+
         # Step 3: Build session context
         session_context = self._build_session_context(expected_user, agent_port)
         self._session_context = session_context
@@ -131,3 +136,4 @@ class GrpcSessionManager:
         )
 
         return session_context
+

@@ -8,6 +8,7 @@ from grpc_client_sdk.services.command_service_client import CommandServiceClient
 from grpc_client_sdk.services.connection_service_client import ConnectionServiceClient
 from grpc_client_sdk.services.file_transfer_service_client import FileTransferServiceClient
 from grpc_client_sdk.services.screen_capture_service_client import ScreenCaptureServiceClient
+from web_automation_sdk.client.web_automation_client import WebAutomationClient
 from test_framework.grpc_session.service_context import ServiceContext
 from test_framework.grpc_session.session_context import SessionContext
 
@@ -36,6 +37,7 @@ class SessionContextBuilder:
             ("commands", CommandServiceClient),
             ("apple_script", AppleScriptServiceClient),
             ("connection", ConnectionServiceClient),
+            ("web_automation", WebAutomationClient),
         ]:
             root.register_service(name, cls)
 
@@ -47,6 +49,7 @@ class SessionContextBuilder:
             ("apple_script", AppleScriptServiceClient),
             ("connection", ConnectionServiceClient),
             ("screen_capture", ScreenCaptureServiceClient),
+            ("web_automation", WebAutomationClient),
         ]:
             user.register_service(name, cls)
 
