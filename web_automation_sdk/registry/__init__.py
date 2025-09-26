@@ -1,0 +1,1 @@
+# Web Automation SDK - Registry Components
