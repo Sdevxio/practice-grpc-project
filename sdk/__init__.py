@@ -94,6 +94,66 @@ class ServerSDK:
             except Exception as e:
                 raise Exception(f"Environment setup error: {e}")
     
+    def get_available_methods(self) -> list:
+        """
+        Discover all available methods from the actual SDK.
+        
+        Returns:
+            List of available method names from the SDK
+        """
+        script = '''
+import sys
+import json
+import inspect
+try:
+    # Import your actual server SDK here
+    # Replace 'YourSDKClass' with the actual class name
+    from server_sdk import YourSDKClass
+    
+    sdk = YourSDKClass()
+    
+    # Get all callable methods (excluding private/magic methods)
+    methods = []
+    for name in dir(sdk):
+        if not name.startswith('_'):  # Skip private methods
+            attr = getattr(sdk, name)
+            if callable(attr):
+                # Get method signature for better info
+                try:
+                    sig = inspect.signature(attr)
+                    methods.append({
+                        "name": name,
+                        "signature": str(sig),
+                        "doc": getattr(attr, '__doc__', None)
+                    })
+                except:
+                    methods.append({"name": name, "signature": "(?)", "doc": None})
+    
+    print("SUCCESS:" + json.dumps({"methods": methods}))
+    
+except ImportError as e:
+    print("ERROR:SDK not installed or import failed: " + str(e))
+except Exception as e:
+    print("ERROR:Failed to introspect SDK: " + str(e))
+'''
+        
+        try:
+            proc = subprocess.run([self.py36_path, '-c', script], 
+                                capture_output=True, text=True, timeout=10)
+            
+            output = proc.stdout.strip()
+            if output.startswith('SUCCESS:'):
+                result = json.loads(output[8:])
+                return result['methods']
+            elif output.startswith('ERROR:'):
+                raise Exception(output[6:])
+            else:
+                raise Exception(f"Method discovery failed: {proc.stderr}")
+                
+        except Exception as e:
+            print(f"Warning: Could not discover SDK methods: {e}")
+            return []
+
     def _execute_sdk_method(self, method_name: str, *args, **kwargs) -> Any:
         """
         Execute a method on the server SDK in the Python 3.6 environment.
@@ -118,20 +178,30 @@ try:
     from server_sdk import YourSDKClass
     
     sdk = YourSDKClass()
-    result = getattr(sdk, "{method_name}")(*{repr(args)}, **{repr(kwargs)})
     
-    # Convert result to JSON-serializable format
-    if hasattr(result, '__dict__'):
-        result_data = result.__dict__
+    # Check if method exists before calling
+    if not hasattr(sdk, "{method_name}"):
+        available_methods = [m for m in dir(sdk) if not m.startswith('_') and callable(getattr(sdk, m))]
+        print("ERROR:Method '{method_name}' not found. Available methods: " + str(available_methods))
     else:
-        result_data = result
-    
-    print("SUCCESS:" + json.dumps({{"result": result_data}}))
+        result = getattr(sdk, "{method_name}")(*{repr(args)}, **{repr(kwargs)})
+        
+        # Convert result to JSON-serializable format
+        if hasattr(result, '__dict__'):
+            result_data = result.__dict__
+        elif hasattr(result, '_asdict'):  # namedtuple
+            result_data = result._asdict()
+        else:
+            result_data = result
+        
+        print("SUCCESS:" + json.dumps({{"result": result_data}}))
     
 except ImportError as e:
     print("ERROR:SDK not installed or import failed: " + str(e))
 except AttributeError as e:
-    print("ERROR:Method not found: " + str(e))
+    print("ERROR:Method call failed: " + str(e))
+except TypeError as e:
+    print("ERROR:Invalid arguments: " + str(e))
 except Exception as e:
     print("ERROR:SDK call failed: " + str(e))
 '''
